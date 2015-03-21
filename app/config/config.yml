@@ -58,11 +58,27 @@ doctrine:
         #     e.g. database_path: "%kernel.root_dir%/data/data.db3"
         #   2. Uncomment database_path in parameters.yml.dist
         #   3. Uncomment next line:
-        #     path:     "%database_path%"
+        path:     "%database_path%"
 
+    #orm:
+    #    auto_generate_proxy_classes: "%kernel.debug%"
+    #    auto_mapping: true
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
-        auto_mapping: true
+        default_entity_manager: default
+        entity_managers:
+          default:
+            auto_mapping: true
+            mappings:
+              RainmakerCliBundle: ~
+              RainmakerWebBundle: ~
+              Rainmaker:
+                mapping: true
+                type: annotation
+                dir: "%kernel.root_dir%/../src/Rainmaker/Entity"
+                prefix: Rainmaker\Entity
+                is_bundle: false
+                alias: Rainmaker
 
 # Swiftmailer Configuration
 swiftmailer:

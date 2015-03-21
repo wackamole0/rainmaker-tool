@@ -1,8 +1,10 @@
 <?php
 
-namespace Wackamole\Rainmaker\Cli;
+namespace RainmakerCliBundle;
 
-use Symfony\Component\Console\Application as ParentApplication;
+//use Symfony\Component\Console\Application as ParentApplication;
+use Symfony\Bundle\FrameworkBundle\Console\Application as ParentApplication;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Console\Helper\FormatterHelper;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Input\InputArgument;
@@ -20,9 +22,12 @@ class Application extends ParentApplication {
   /**
    * {@inheritdoc}
    */
-  public function __construct()
+  public function __construct(KernelInterface $kernel)
   {
-    parent::__construct('Rainmaker CLI', '1.x-dev');
+    parent::__construct($kernel);
+
+    $this->setName('Rainmaker CLI');
+    $this->setVersion('1.x-dev');
 
     $this->setDefaultTimezone();
 
@@ -49,6 +54,8 @@ class Application extends ParentApplication {
   protected function getCommands()
   {
     $commands = array();
+    $commands[] = new Command\ProjectCreateCommand();
+    $commands[] = new Command\ProjectDestroyCommand();
     $commands[] = new Command\WelcomeCommand();
     return $commands;
   }
@@ -73,6 +80,37 @@ class Application extends ParentApplication {
     }
 
     return implode(PHP_EOL, $messages);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function doRun(InputInterface $input, OutputInterface $output)
+  {
+    // Set the input to non-interactive if the yes or no options are used.
+    if ($input->hasParameterOption(array('--yes', '-y')) || $input->hasParameterOption(array('--no', '-n'))) {
+      $input->setInteractive(false);
+    }
+    // Enable the shell.
+    elseif ($input->hasParameterOption(array('--shell', '-s'))) {
+      $shell = new Shell($this);
+      $shell->run();
+      return 0;
+    }
+
+    $this->output = $output;
+    return parent::doRun($input, $output);
+  }
+
+  /**
+   * @return OutputInterface
+   */
+  public function getOutput() {
+    if (isset($this->output)) {
+      return $this->output;
+    }
+    $stream = fopen('php://stdout', 'w');
+    return new StreamOutput($stream);
   }
 
   /**
