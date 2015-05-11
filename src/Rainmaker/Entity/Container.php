@@ -12,6 +12,13 @@ use Rainmaker\RainmakerException;
  */
 class Container
 {
+
+  const STATE_OFFLINE           =  0;
+  const STATE_CREATING_LXC      =  1;
+  const STATE_STARTING_LXC      =  2;
+  const STATE_PROVISIONING_LXC  =  3;
+  const STATE_ONLINE            = 10;
+
   /**
    * @ORM\Column(type="integer")
    * @ORM\Id
@@ -33,6 +40,26 @@ class Container
    * @ORM\Column(type="string", length=41)
    */
   protected $friendlyName;
+
+  /**
+   * @ORM\Column(type="string", length=41)
+   */
+  protected $lxcUtsName;
+
+  /**
+   * @ORM\Column(type="string", length=17)
+   */
+  protected $lxcHwAddr;
+
+  /**
+   * @ORM\Column(type="string", length=255)
+   */
+  protected $lxcRootFs;
+
+  /**
+   * @ORM\Column(type="integer", nullable=TRUE)
+   */
+  protected $state = 0;
 
 
   /**
@@ -112,6 +139,75 @@ class Container
   public function getFriendlyName()
   {
     return $this->friendlyName;
+  }
+
+  /**
+   * Get LXC UTS name
+   *
+   * @return string
+   */
+  public function getLxcUtsName()
+  {
+    return $this->name;
+  }
+
+  /**
+   * Set LXC UTS name
+   *
+   * @param string $lxcUtsName
+   * @return Container
+   */
+  public function setLxcUtsName($lxcUtsName)
+  {
+    $this->lxcUtsName = $lxcUtsName;
+
+    return $this;
+  }
+
+  /**
+   * Get LXC Hardware Addr
+   *
+   * @return string
+   */
+  public function getLxcHwAddr()
+  {
+    return $this->lxcHwAddr;
+  }
+
+  /**
+   * Set LXC Hardware Addr
+   *
+   * @param string $lxcHwAddr
+   * @return Container
+   */
+  public function setLxcHwAddr($lxcHwAddr)
+  {
+    $this->lxcHwAddr = $lxcHwAddr;
+
+    return $this;
+  }
+
+  /**
+   * Get LXC Root FS
+   *
+   * @return string
+   */
+  public function getLxcRootFs()
+  {
+    return $this->lxcRootFs;
+  }
+
+  /**
+   * Set LXC Root FS
+   *
+   * @param string $lxcRootFs
+   * @return Container
+   */
+  public function setLxcRootFs($lxcRootFs)
+  {
+    $this->lxcRootFs = $lxcRootFs;
+
+    return $this;
   }
 
   public static function friendlyNameToContainerName($fname)
