@@ -3,6 +3,7 @@
 namespace Rainmaker\Task\Subtask;
 
 use Rainmaker\Task\Task;
+use Rainmaker\Util\Template;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
@@ -19,8 +20,6 @@ class CreateLinuxContainer extends Task
     try {
       $process = new Process('lxc-clone _golden-proj_ ' . $this->getContainer()->getName());
       $this->getProcessRunner()->run($process);
-
-      //echo $process->getOutput();
     } catch (ProcessFailedException $e) {
       echo $e->getMessage();
     }
@@ -47,13 +46,7 @@ class CreateLinuxContainer extends Task
 
   protected function writeLxcConfigurationFile()
   {
-    $loader = new \Twig_Loader_Filesystem(dirname(__FILE__) . '/../../Resources/views');
-//    $twig = new Twig_Environment($loader, array(
-//      'cache' => '/path/to/compilation_cache',
-//    ));
-    $twig = new \Twig_Environment($loader, array());
-
-    $config = $twig->render('lxc/project-config.twig', array(
+    $config = Template::render('lxc/project-config.twig', array(
       'lxc_root_fs'       => $this->getContainer()->getLxcRootFs(),
       'lxc_utsname'       => $this->getContainer()->getLxcUtsName(),
       'lxc_net_hwaddr'    => $this->getContainer()->getLxcHwAddr(),
