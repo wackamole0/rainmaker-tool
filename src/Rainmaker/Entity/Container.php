@@ -57,6 +57,11 @@ class Container
   protected $lxcRootFs;
 
   /**
+   * @ORM\Column(type="string", length=255)
+   */
+  protected $hostname;
+
+  /**
    * @ORM\Column(type="integer", nullable=TRUE)
    */
   protected $state = 0;
@@ -206,6 +211,29 @@ class Container
   public function setLxcRootFs($lxcRootFs)
   {
     $this->lxcRootFs = $lxcRootFs;
+
+    return $this;
+  }
+
+  /**
+   * Get Hostname
+   *
+   * @return string
+   */
+  public function getHostname()
+  {
+    return $this->hostname;
+  }
+
+  /**
+   * Set Hostname
+   *
+   * @param string $hostname
+   * @return Container
+   */
+  public function setHostname($hostname)
+  {
+    $this->hostname = $hostname;
 
     return $this;
   }

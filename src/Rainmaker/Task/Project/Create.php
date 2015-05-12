@@ -21,7 +21,10 @@ class Create extends TaskWithSubtasks
       new \Rainmaker\Task\Subtask\CreateLinuxContainer(),
 
       // Configure container
-      //new \Rainmaker\Task\Subtask\ConfigureLinuxContainer(),
+      new \Rainmaker\Task\Subtask\ConfigureLinuxContainer(),
+
+      // Configure host
+      new \Rainmaker\Task\Subtask\ConfigureLinuxHost(),
 
       // Configure DHCP
       //new \Rainmaker\Task\Subtask\AddProjectDhcpSettings(),

@@ -39,6 +39,8 @@ class CreateTest extends \PHPUnit_Framework_TestCase
     $this->assertEquals('/var/lib/lxc/test/rootfs', $task->getContainer()->getLxcRootFs());
 
     $this->assertEquals(file_get_contents(dirname(__FILE__) . '/../../../Resources/tests/test_lxc_config'), $filesystemMock->getFileContents('/var/lib/lxc/' . $task->getContainer()->getName() . '/config'));
+    $this->assertEquals(file_get_contents(dirname(__FILE__) . '/../../../Resources/tests/test_hostname'), $filesystemMock->getFileContents('/var/lib/lxc/' . $task->getContainer()->getName() . '/rootfs/etc/hostname'));
+    $this->assertEquals(file_get_contents(dirname(__FILE__) . '/../../../Resources/tests/test_hosts'), $filesystemMock->getFileContents('/var/lib/lxc/' . $task->getContainer()->getName() . '/rootfs/etc/hosts'));
   }
 
   protected function createDummyProject()
@@ -46,7 +48,8 @@ class CreateTest extends \PHPUnit_Framework_TestCase
     $container = new Container();
     $container
       ->setName('test')
-      ->setFriendlyName('Test');
+      ->setFriendlyName('Test')
+      ->setHostname('test.localdev');
     return $container;
   }
 
