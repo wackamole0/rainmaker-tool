@@ -38,7 +38,11 @@ class FilesystemMock extends Filesystem
   protected function pathToUrl($path = '')
   {
     //@todo Consider adding hasChild() test and throw exception if test fails?
-    return $this->root->getChild(ltrim($path, '/'))->url();
+    if ($this->root->hasChild(ltrim($path, '/'))) {
+      return $this->root->getChild(ltrim($path, '/'))->url();
+    }
+
+    return $this->root->url() . $path;
   }
 
   protected function pathToUrlWrapper($paths)

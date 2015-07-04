@@ -1,0 +1,5 @@
+#include "/etc/dhcp/dhcpd.host.conf.d/localdev.example.cluster.conf";
+#include "/etc/dhcp/dhcpd.host.conf.d/localdev.example.conf";
+{% for container in containers %}
+include "/etc/dhcp/dhcpd.host.conf.d/{{ container.reverseHostname() }}.conf";
+{% endfor %}

@@ -1,0 +1,4 @@
+#include "/etc/dhcp/dhcpd.class.conf.d/localdev.example.conf";
+{% for container in containers %}
+include "/etc/dhcp/dhcpd.class.conf.d/localdev.{{ container.getName() }}.conf";
+{% endfor %}

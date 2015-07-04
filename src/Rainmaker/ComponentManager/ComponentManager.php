@@ -1,33 +1,37 @@
 <?php
 
-namespace Rainmaker\Task;
-
-use Rainmaker\RainmakerException;
+namespace Rainmaker\ComponentManager;
 
 /**
- * A class for representing the unit of work required to perform some task
+ * Abstract base class used by all classes that manager a component of the Rainmaker ecosystem
  *
- * @package Rainmaker\Task
+ * @package Rainmaker\ComponentManager
  */
-abstract class Task
-{
+abstract class ComponentManager {
 
-  /**
-   * @var \Rainmaker\Entity\Container
-   */
-  protected $container = NULL;
-
-  protected $entityManager = NULL;
+  protected $entityManager  = NULL;
 
   /**
    * @var \Rainmaker\Process\ProcessRunner
    */
-  protected $processRunner = NULL;
+  protected $processRunner  = NULL;
 
   /**
    * @var \Rainmaker\Util\Filesystem
    */
-  protected $filesystem = NULL;
+  protected $filesystem     = NULL;
+
+  /**
+   * @var \Rainmaker\Entity\Container
+   */
+  protected $container      = NULL;
+
+  public function __construct($entityManager, $processRunner, $filesystem)
+  {
+    $this->entityManager  = $entityManager;
+    $this->processRunner  = $processRunner;
+    $this->filesystem     = $filesystem;
+  }
 
   /**
    * @return \Rainmaker\Entity\Container
@@ -39,7 +43,7 @@ abstract class Task
 
   /**
    * @param \Rainmaker\Entity\Container $container
-   * @return Task $this
+   * @return ComponentManager $this
    */
   public function setContainer($container)
   {
@@ -70,7 +74,7 @@ abstract class Task
 
   /**
    * @param \Rainmaker\Process\ProcessRunner $processRunner
-   * @return Task $this
+   * @return ComponentManager $this
    */
   public function setProcessRunner($processRunner)
   {
@@ -89,23 +93,13 @@ abstract class Task
 
   /**
    * @param \Rainmaker\Util\Filesystem $filesystem
-   * @return Task $this
+   * @return ComponentManager $this
    */
   public function setFilesystem($filesystem)
   {
     $this->filesystem = $filesystem;
 
     return $this;
-  }
-
-  /**
-   * @return void
-   * @throws RainmakerException
-   * @throws \Exception
-   */
-  public function performTask()
-  {
-    throw new \LogicException('You must override the performTask() method in the concrete command class.');
   }
 
 }

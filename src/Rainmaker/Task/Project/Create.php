@@ -27,7 +27,7 @@ class Create extends TaskWithSubtasks
       new \Rainmaker\Task\Subtask\ConfigureLinuxHost(),
 
       // Configure DHCP
-      //new \Rainmaker\Task\Subtask\AddProjectDhcpSettings(),
+      new \Rainmaker\Task\Subtask\AddProjectDhcpSettings(),
 
       // Configure Bind
       //new \Rainmaker\Task\Subtask\AddProjectDnsSettings(),

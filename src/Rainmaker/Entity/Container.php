@@ -62,6 +62,16 @@ class Container
   protected $hostname;
 
   /**
+   * @ORM\Column(type="string", length=15)
+   */
+  protected $networkAddress;
+
+  /**
+   * @ORM\Column(type="string", length=15)
+   */
+  protected $ipAddress;
+
+  /**
    * @ORM\Column(type="integer", nullable=TRUE)
    */
   protected $state = 0;
@@ -238,6 +248,52 @@ class Container
     return $this;
   }
 
+  /**
+   * Get Network Address
+   *
+   * @return string
+   */
+  public function getNetworkAddress()
+  {
+    return $this->networkAddress;
+  }
+
+  /**
+   * Set Network Address
+   *
+   * @param string $networkAddress
+   * @return Container
+   */
+  public function setNetworkAddress($networkAddress)
+  {
+    $this->networkAddress = $networkAddress;
+
+    return $this;
+  }
+
+  /**
+   * Get IP Address
+   *
+   * @return string
+   */
+  public function getIPAddress()
+  {
+    return $this->ipAddress;
+  }
+
+  /**
+   * Set IP Address
+   *
+   * @param string $ipAddress
+   * @return Container
+   */
+  public function setIPAddress($ipAddress)
+  {
+    $this->ipAddress = $ipAddress;
+
+    return $this;
+  }
+
   public static function friendlyNameToContainerName($fname)
   {
     if (NULL === ($cname = preg_replace('/[^a-z0-9\.\-_]/', '-', substr(strtolower($fname), 0, 20)))) {
@@ -245,6 +301,18 @@ class Container
     }
 
     return $cname;
+  }
+
+  public function reverseHostname() {
+    return implode('.', array_reverse(explode('.', $this->getHostname())));
+  }
+
+  public function getIpAddrRangeMin() {
+    return '10.100.1.1';
+  }
+
+  public function getIpAddrRangeMax() {
+    return '10.100.1.254';
   }
 
 }

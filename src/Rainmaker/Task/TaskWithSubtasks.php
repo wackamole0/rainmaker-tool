@@ -58,6 +58,7 @@ abstract class TaskWithSubtasks extends Task
       for ($i = 0; $i < $subtaskCount; $i++) {
         $subtasks[$i]
           ->setContainer($this->container)
+          ->setEntityManager($this->entityManager)
           ->setProcessRunner($this->processRunner)
           ->setFilesystem($this->filesystem)
           ->performTask();
