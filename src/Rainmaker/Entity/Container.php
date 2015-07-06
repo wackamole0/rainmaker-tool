@@ -42,77 +42,77 @@ class Container
   protected $friendlyName;
 
   /**
-   * @ORM\Column(type="string", length=41)
+   * @ORM\Column(type="string", length=41, nullable=TRUE)
    */
   protected $lxcUtsName;
 
   /**
-   * @ORM\Column(type="string", length=17)
+   * @ORM\Column(type="string", length=17, nullable=TRUE)
    */
   protected $lxcHwAddr;
 
   /**
-   * @ORM\Column(type="string", length=255)
+   * @ORM\Column(type="string", length=255, nullable=TRUE)
    */
   protected $lxcRootFs;
 
   /**
-   * @ORM\Column(type="string", length=255)
+   * @ORM\Column(type="string", length=255, nullable=TRUE)
    */
   protected $hostname;
 
   /**
-   * @ORM\Column(type="string", length=255)
+   * @ORM\Column(type="string", length=255, nullable=TRUE)
    */
   protected $domain;
 
   /**
-   * @ORM\Column(type="string", length=15)
+   * @ORM\Column(type="string", length=15, nullable=TRUE)
    */
   protected $networkAddress;
 
   /**
-   * @ORM\Column(type="string", length=15)
+   * @ORM\Column(type="string", length=15, nullable=TRUE)
    */
   protected $ipAddress;
 
   /**
-   * @ORM\Column(type="integer")
+   * @ORM\Column(type="integer", nullable=TRUE)
    */
   protected $dnsZoneTtl;
 
   /**
-   * @ORM\Column(type="string", length=255)
+   * @ORM\Column(type="string", length=255, nullable=TRUE)
    */
   protected $dnsZonePriMasterNs;
 
   /**
-   * @ORM\Column(type="string", length=255)
+   * @ORM\Column(type="string", length=255, nullable=TRUE)
    */
   protected $dnsZoneAdminEmail;
 
   /**
-   * @ORM\Column(type="integer")
+   * @ORM\Column(type="integer", nullable=TRUE)
    */
   protected $dnsZoneSerial;
 
   /**
-   * @ORM\Column(type="integer")
+   * @ORM\Column(type="integer", nullable=TRUE)
    */
   protected $dnsZoneRefresh;
 
   /**
-   * @ORM\Column(type="integer")
+   * @ORM\Column(type="integer", nullable=TRUE)
    */
   protected $dnsZoneRetry;
 
   /**
-   * @ORM\Column(type="integer")
+   * @ORM\Column(type="integer", nullable=TRUE)
    */
   protected $dnsZoneExpire;
 
   /**
-   * @ORM\Column(type="integer")
+   * @ORM\Column(type="integer", nullable=TRUE)
    */
   protected $dnsZoneNegCacheTtl;
 
