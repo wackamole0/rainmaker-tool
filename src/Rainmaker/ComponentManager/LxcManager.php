@@ -24,7 +24,7 @@ class LxcManager extends ComponentManager {
     $this->container = $container;
 
     try {
-      $process = new Process('lxc-clone _golden-proj_ ' . $this->getContainer()->getName());
+      $process = new Process('lxc-create --name ' . escapeshellarg($this->getContainer()->getName()) . ' --bdev btrfs --template rainmaker-project');
       $this->getProcessRunner()->run($process);
     } catch (ProcessFailedException $e) {
       echo $e->getMessage();
