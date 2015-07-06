@@ -30,7 +30,7 @@ class Create extends TaskWithSubtasks
       new \Rainmaker\Task\Subtask\AddProjectDhcpSettings(),
 
       // Configure Bind
-      //new \Rainmaker\Task\Subtask\AddProjectDnsSettings(),
+      new \Rainmaker\Task\Subtask\AddProjectDnsSettings(),
 
       // Boot container
       //new \Rainmaker\Task\Subtask\StartLinuxContainer(),

@@ -23,6 +23,8 @@ class Template {
     if (is_null(static::$twig)) {
       $loader = new \Twig_Loader_Filesystem(dirname(__FILE__) . '/../Resources/views');
       static::$twig = new \Twig_Environment($loader, array());
+
+      static::$twig->addFilter(new \Twig_SimpleFilter('pad', 'str_pad'));
     }
 
     return static::$twig->render($name, $context);

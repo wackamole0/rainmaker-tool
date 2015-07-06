@@ -52,9 +52,10 @@ class CreateTest extends \PHPUnit_Framework_TestCase
     $this->assertEquals(file_get_contents(dirname(__FILE__) . '/../../../Resources/tests/dhcp/dhcpd.class.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.class.conf'));
     $this->assertEquals(file_get_contents(dirname(__FILE__) . '/../../../Resources/tests/dhcp/subnet_10.100.0.0.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.subnet.conf.d/10.100.0.0.conf'));
 
-//    $this->assertEquals(file_get_contents(dirname(__FILE__) . '/../../../Resources/tests/bind/db.test.localdev'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/db.rainmaker/db.test.localdev'));
-//    $this->assertEquals(file_get_contents(dirname(__FILE__) . '/../../../Resources/tests/bind/db.10.100.1'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/db.rainmaker/db.10.100.1'));
-//    $this->assertEquals(file_get_contents(dirname(__FILE__) . '/../../../Resources/tests/bind/named.test.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/named.conf.rainmaker/test.conf'));
+    $this->assertEquals(file_get_contents(dirname(__FILE__) . '/../../../Resources/tests/bind/db.test.localdev'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/db.rainmaker/db.test.localdev'));
+    $this->assertEquals(file_get_contents(dirname(__FILE__) . '/../../../Resources/tests/bind/db.10.100.1'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/db.rainmaker/db.10.100.1'));
+    $this->assertEquals(file_get_contents(dirname(__FILE__) . '/../../../Resources/tests/bind/named.test.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/named.conf.rainmaker/test.conf'));
+    $this->assertEquals(file_get_contents(dirname(__FILE__) . '/../../../Resources/tests/bind/named.conf.local'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/named.conf.local'));
   }
 
   protected function createDummyProject()
@@ -63,7 +64,9 @@ class CreateTest extends \PHPUnit_Framework_TestCase
     $container
       ->setName('test')
       ->setFriendlyName('Test')
-      ->setHostname('cluster.test.localdev');
+      ->setHostname('cluster.test.localdev')
+      ->setDomain('test.localdev')
+      ->setDnsZoneSerial('2015070501');
     return $container;
   }
 

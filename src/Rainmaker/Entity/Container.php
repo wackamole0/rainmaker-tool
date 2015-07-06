@@ -62,6 +62,11 @@ class Container
   protected $hostname;
 
   /**
+   * @ORM\Column(type="string", length=255)
+   */
+  protected $domain;
+
+  /**
    * @ORM\Column(type="string", length=15)
    */
   protected $networkAddress;
@@ -70,6 +75,46 @@ class Container
    * @ORM\Column(type="string", length=15)
    */
   protected $ipAddress;
+
+  /**
+   * @ORM\Column(type="integer")
+   */
+  protected $dnsZoneTtl;
+
+  /**
+   * @ORM\Column(type="string", length=255)
+   */
+  protected $dnsZonePriMasterNs;
+
+  /**
+   * @ORM\Column(type="string", length=255)
+   */
+  protected $dnsZoneAdminEmail;
+
+  /**
+   * @ORM\Column(type="integer")
+   */
+  protected $dnsZoneSerial;
+
+  /**
+   * @ORM\Column(type="integer")
+   */
+  protected $dnsZoneRefresh;
+
+  /**
+   * @ORM\Column(type="integer")
+   */
+  protected $dnsZoneRetry;
+
+  /**
+   * @ORM\Column(type="integer")
+   */
+  protected $dnsZoneExpire;
+
+  /**
+   * @ORM\Column(type="integer")
+   */
+  protected $dnsZoneNegCacheTtl;
 
   /**
    * @ORM\Column(type="integer", nullable=TRUE)
@@ -249,6 +294,29 @@ class Container
   }
 
   /**
+   * Get Domain Name
+   *
+   * @return string
+   */
+  public function getDomain()
+  {
+    return $this->domain;
+  }
+
+  /**
+   * Set Domain Name
+   *
+   * @param string $domain
+   * @return Container
+   */
+  public function setDomain($domain)
+  {
+    $this->domain = $domain;
+
+    return $this;
+  }
+
+  /**
    * Get Network Address
    *
    * @return string
@@ -294,6 +362,190 @@ class Container
     return $this;
   }
 
+  /**
+   * Get DNS Zone TTL
+   *
+   * @return string
+   */
+  public function getDnsZoneTtl()
+  {
+    return $this->dnsZoneTtl;
+  }
+
+  /**
+   * Set DNS Zone TTL
+   *
+   * @param string $dnsZoneTtl
+   * @return Container
+   */
+  public function setDnsZoneTtl($dnsZoneTtl)
+  {
+    $this->dnsZoneTtl = $dnsZoneTtl;
+
+    return $this;
+  }
+
+  /**
+   * Get DNS zone primary master name server
+   *
+   * @return string
+   */
+  public function getDnsZonePriMasterNs()
+  {
+    return $this->dnsZonePriMasterNs;
+  }
+
+  /**
+   * Set DNS zone primary master name server
+   *
+   * @param string $dnsZonePriMasterNs
+   * @return Container
+   */
+  public function setDnsZonePriMasterNs($dnsZonePriMasterNs)
+  {
+    $this->dnsZonePriMasterNs = $dnsZonePriMasterNs;
+
+    return $this;
+  }
+
+  /**
+   * Get DNS zone administrator email address
+   *
+   * @return string
+   */
+  public function getDnsZoneAdminEmail()
+  {
+    return $this->dnsZoneAdminEmail;
+  }
+
+  /**
+   * Set DNS zone administrator email address
+   *
+   * @param string $dnsZoneAdminEmail
+   * @return Container
+   */
+  public function setDnsZoneAdminEmail($dnsZoneAdminEmail)
+  {
+    $this->dnsZoneAdminEmail = $dnsZoneAdminEmail;
+
+    return $this;
+  }
+
+  /**
+   * Get DNS zone serial
+   *
+   * @return string
+   */
+  public function getDnsZoneSerial()
+  {
+    return $this->dnsZoneSerial;
+  }
+
+  /**
+   * Set DNS zone serial
+   *
+   * @param string $dnsZoneSerial
+   * @return Container
+   */
+  public function setDnsZoneSerial($dnsZoneSerial)
+  {
+    $this->dnsZoneSerial = $dnsZoneSerial;
+
+    return $this;
+  }
+
+  /**
+   * Get DNS zone refresh
+   *
+   * @return string
+   */
+  public function getDnsZoneRefresh()
+  {
+    return $this->dnsZoneRefresh;
+  }
+
+  /**
+   * Set DNS zone refresh
+   *
+   * @param string $dnsZoneRefresh
+   * @return Container
+   */
+  public function setDnsZoneRefresh($dnsZoneRefresh)
+  {
+    $this->dnsZoneRefresh = $dnsZoneRefresh;
+
+    return $this;
+  }
+
+  /**
+   * Get DNS zone retry
+   *
+   * @return string
+   */
+  public function getDnsZoneRetry()
+  {
+    return $this->dnsZoneRetry;
+  }
+
+  /**
+   * Set DNS zone retry
+   *
+   * @param string $dnsZoneRetry
+   * @return Container
+   */
+  public function setDnsZoneRetry($dnsZoneRetry)
+  {
+    $this->dnsZoneRetry = $dnsZoneRetry;
+
+    return $this;
+  }
+
+  /**
+   * Get DNS zone expire
+   *
+   * @return string
+   */
+  public function getDnsZoneExpire()
+  {
+    return $this->dnsZoneExpire;
+  }
+
+  /**
+   * Set DNS zone expire
+   *
+   * @param string $dnsZoneExpire
+   * @return Container
+   */
+  public function setDnsZoneExpire($dnsZoneExpire)
+  {
+    $this->dnsZoneExpire = $dnsZoneExpire;
+
+    return $this;
+  }
+
+  /**
+   * Get DNS zone negative cache TTL
+   *
+   * @return string
+   */
+  public function getDnsZoneNegCacheTtl()
+  {
+    return $this->dnsZoneNegCacheTtl;
+  }
+
+  /**
+   * Set DNS zone negative cache TTL
+   *
+   * @param string $dnsZoneNegCacheTtl
+   * @return Container
+   */
+  public function setDnsZoneNegCacheTtl($dnsZoneNegCacheTtl)
+  {
+    $this->dnsZoneNegCacheTtl = $dnsZoneNegCacheTtl;
+
+    return $this;
+  }
+
   public static function friendlyNameToContainerName($fname)
   {
     if (NULL === ($cname = preg_replace('/[^a-z0-9\.\-_]/', '-', substr(strtolower($fname), 0, 20)))) {
@@ -303,16 +555,112 @@ class Container
     return $cname;
   }
 
-  public function reverseHostname() {
+  public function reverseHostname()
+  {
     return implode('.', array_reverse(explode('.', $this->getHostname())));
   }
 
-  public function getIpAddrRangeMin() {
+  public function reverseDomain()
+  {
+    return implode('.', array_reverse(explode('.', $this->getDomain())));
+  }
+
+  public function networkPrefix()
+  {
+    $network = $this->getNetworkAddress();
+    $networkPrefix = NULL;
+    if (FALSE !== ($lastdot = strripos($network, '.'))) {
+      $networkPrefix = substr($network, 0, $lastdot);
+    }
+
+    return $networkPrefix;
+  }
+
+  public function reverseNetworkPrefix()
+  {
+    return implode('.', array_reverse(explode('.', $this->networkPrefix())));
+  }
+
+  /**
+   * @todo This needs a proper implementation
+   *
+   * @return string
+   */
+  public function getIpAddrRangeMin()
+  {
     return '10.100.1.1';
   }
 
-  public function getIpAddrRangeMax() {
+  /**
+   * @todo This needs a proper implementation
+   *
+   * @return string
+   */
+  public function getIpAddrRangeMax()
+  {
     return '10.100.1.254';
+  }
+
+  /**
+   * @todo This needs a proper implementation
+   *
+   * @return array
+   */
+  public function getPrimaryNameServers()
+  {
+    return array(
+      'ns.rainmaker.localdev',
+      'ns.test.localdev'
+    );
+  }
+
+  /**
+   * @todo This needs a proper implementation
+   *
+   * @return array
+   */
+  public function getNameServerRecords()
+  {
+    return array(
+      array(
+        'hostname'  => 'ns.rainmaker.localdev.',
+        'ipAddress' => '10.100.0.2',
+      ),
+      array(
+        'hostname'  => 'ns',
+        'ipAddress' => '10.100.0.2',
+      )
+    );
+  }
+
+  /**
+   * @todo This needs a proper implementation
+   *
+   * @return array
+   */
+  public function getDnsRecords()
+  {
+    return array(
+      array(
+        'hostname'  => 'cluster',
+        'ipAddress' => '10.100.1.1',
+      )
+    );
+  }
+
+  /**
+   * @todo This needs a proper implementation
+   *
+   * @return array
+   */
+  public function getDnsPtrRecords()
+  {
+    return array(
+      array(
+        'hostname'  => 'cluster.test.localdev.',
+        'ipAddress' => '1',
+      )
+    );
   }
 
 }

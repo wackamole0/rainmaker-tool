@@ -1,0 +1,10 @@
+zone "{{ container.getDomain() }}" {
+  type master;
+  file "/etc/bind/db.rainmaker/db.{{ container.getDomain() }}";
+};
+
+zone "{{ container.reverseNetworkPrefix() }}.in-addr.arpa" {
+  type master;
+  notify no;
+  file "/etc/bind/db.rainmaker/db.{{ container.networkPrefix() }}";
+};

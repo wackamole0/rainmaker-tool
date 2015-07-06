@@ -66,7 +66,7 @@ class DhcpManager extends ComponentManager {
       'name' => $this->getContainer()->getName(),
     ));
 
-    $file = '/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.class.conf.d/localdev.' . $this->getContainer()->getName() . '.conf';
+    $file = '/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.class.conf.d/' . $this->getContainer()->reverseDomain() . '.conf';
     $this->getFilesystem()->putFileContents($file, $config);
   }
 

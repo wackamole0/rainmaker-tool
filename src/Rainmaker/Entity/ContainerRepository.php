@@ -81,11 +81,7 @@ class ContainerRepository extends EntityRepository
 
   public function getAllNetworkAddresses(Container $container)
   {
-    $network = $container->getNetworkAddress();
-    $networkPrefix = NULL;
-    if (FALSE !== ($lastdot = strripos($network, '.'))) {
-      $networkPrefix = substr($network, 0, $lastdot);
-    }
+    $networkPrefix = $container->networkPrefix();
     $networkAddresses = array();
     for($i = $this->defaultNetworkAddressMin; $i <= $this->defaultNetworkAddressMax; $i++) {
       $networkAddresses[] = $networkPrefix . '.' . $i;

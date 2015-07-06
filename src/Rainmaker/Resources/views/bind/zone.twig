@@ -1,0 +1,23 @@
+$TTL {{ container.getDnsZoneTtl() }}
+@   IN  SOA     {{ container.getDnsZonePriMasterNs() }}. {{ container.getDnsZoneAdminEmail() }}. (
+        {{ container.getDnsZoneSerial()|pad(10, ' ') }}  ; Serial
+        {{ container.getDnsZoneRefresh()|pad(10, ' ') }}  ; Refresh
+        {{ container.getDnsZoneRetry()|pad(10, ' ') }}  ; Retry
+        {{ container.getDnsZoneExpire()|pad(10, ' ') }}  ; Expire
+        {{ container.getDnsZoneNegCacheTtl()|pad(10, ' ') }}  ; Negative Cache TTL
+)
+;
+; name servers - NS records
+{% for nameserver in container.getPrimaryNameServers() %}
+                        IN      NS              {{ nameserver }}.
+{% endfor %}
+
+; name servers - A records
+{% for record in container.getNameServerRecords() %}
+{{ record.hostname|pad(22, ' ') }}  IN      A               {{ record.ipAddress }}
+{% endfor %}
+
+; Define hostname -> IP pairs which you wish to resolve
+{% for record in container.getDnsRecords() %}
+{{ record.hostname|pad(22, ' ') }}  IN      A               {{ record.ipAddress }}
+{% endfor %}
