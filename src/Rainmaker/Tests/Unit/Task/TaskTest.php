@@ -1,14 +1,14 @@
 <?php
 
-namespace Rainmaker\Tests\Task;
+namespace Rainmaker\Tests\Unit\Task;
 
-use Rainmaker\Tests\Fake\TaskFake;
-use Rainmaker\Tests\Fake\ExceptionTaskFake;
+use Rainmaker\Tests\Unit\Fake\TaskFake;
+use Rainmaker\Tests\Unit\Fake\ExceptionTaskFake;
 
 /**
  * Unit tests \Rainmaker\Task\Task
  *
- * @package Rainmaker\Tests\Task
+ * @package Rainmaker\Tests\Unit\Task
  */
 class TaskTest extends \PHPUnit_Framework_TestCase
 {

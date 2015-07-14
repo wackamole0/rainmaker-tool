@@ -1,6 +1,6 @@
 <?php
 
-namespace Rainmaker\Tests\Mock;
+namespace Rainmaker\Tests\Unit\Mock;
 
 use Rainmaker\Util\Filesystem;
 use org\bovigo\vfs\vfsStream;
@@ -10,7 +10,7 @@ use org\bovigo\vfs\visitor\vfsStreamPrintVisitor;
  * Mocks out Rainmaker\Util\Filesystem so that instead of interacting with the real filesystem it instead
  * interacts with a mock filesystem provided by vfsStream
  *
- * @package Rainmaker\Tests\Mock
+ * @package Rainmaker\Tests\Unit\Mock
  */
 class FilesystemMock extends Filesystem
 {

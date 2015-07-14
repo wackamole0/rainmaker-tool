@@ -1,6 +1,6 @@
 <?php
 
-namespace Rainmaker\Tests\Mock;
+namespace Rainmaker\Tests\Unit\Mock;
 
 use Rainmaker\Entity\ContainerRepository;
 

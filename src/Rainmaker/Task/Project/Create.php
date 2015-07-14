@@ -37,4 +37,9 @@ class Create extends TaskWithSubtasks
     );
   }
 
+  protected function generateLogHeader()
+  {
+    return 'Began creating new project container with name: ' . $this->getContainer()->getName();
+  }
+
 }

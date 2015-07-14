@@ -1,17 +1,18 @@
 <?php
 
-namespace Rainmaker\Tests\Task\Project;
+namespace Rainmaker\Tests\Unit\Task\Project;
 
 use Rainmaker\Entity\Container;
 use Rainmaker\Task\Project\Create;
-use Rainmaker\Tests\Mock\EntityManagerMock;
-use Rainmaker\Tests\Mock\FilesystemMock;
-use Rainmaker\Tests\Mock\ProcessRunnerMock;
+use Rainmaker\Tests\Unit\Mock\EntityManagerMock;
+use Rainmaker\Tests\Unit\Mock\FilesystemMock;
+use Rainmaker\Tests\Unit\Mock\ProcessRunnerMock;
+use Rainmaker\Logger\TaskLogger;
 
 /**
  * Unit tests \Rainmaker\Task\Project\Create
  *
- * @package Rainmaker\Tests\Task\Project
+ * @package Rainmaker\Tests\Unit\Task\Project
  */
 class CreateTest extends \PHPUnit_Framework_TestCase
 {
@@ -34,7 +35,12 @@ class CreateTest extends \PHPUnit_Framework_TestCase
     $filesystemMock = $this->createFilesystemMock();
     $task->setFilesystem($filesystemMock);
 
+    $logger = $this->createLogger();
+    $task->setLogger($logger);
+
     $task->performTask();
+
+    var_dump($logger->getLogBufferContents());
 
     $this->assertEquals('test', $task->getContainer()->getName());
     $this->assertEquals('Test', $task->getContainer()->getFriendlyName());
@@ -87,9 +93,14 @@ class CreateTest extends \PHPUnit_Framework_TestCase
   protected function createFilesystemMock()
   {
     $fs = new FilesystemMock();
-    $fs->copyFromFileSystem(__DIR__ . '/../../fsMocks');
+    $fs->copyFromFileSystem(__DIR__ . '/../../../fsMocks');
 
     return $fs;
+  }
+
+  protected function createLogger()
+  {
+    return new TaskLogger('testLogger');
   }
 
 }

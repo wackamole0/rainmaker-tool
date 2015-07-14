@@ -30,6 +30,11 @@ abstract class Task
   protected $filesystem = NULL;
 
   /**
+   * @var \Monolog\Logger
+   */
+  protected $logger = NULL;
+
+  /**
    * @return \Rainmaker\Entity\Container
    */
   public function getContainer()
@@ -99,6 +104,25 @@ abstract class Task
   }
 
   /**
+   * @return \Monolog\Logger $logger
+   */
+  protected function getLogger()
+  {
+    return $this->logger;
+  }
+
+  /**
+   * @param \Monolog\Logger
+   * @return Task $this
+   */
+  public function setLogger($logger)
+  {
+    $this->logger = $logger;
+
+    return $this;
+  }
+
+  /**
    * @return void
    * @throws RainmakerException
    * @throws \Exception
@@ -106,6 +130,20 @@ abstract class Task
   public function performTask()
   {
     throw new \LogicException('You must override the performTask() method in the concrete command class.');
+  }
+
+  /**
+   * Adds a log record.
+   *
+   * @param  integer $level   The logging level
+   * @param  string  $message The log message
+   * @param  array   $context The log context
+   */
+  public function log($level, $message, array $context = array())
+  {
+    if (!empty($this->logger)) {
+      $this->logger->addRecord($level, $message, $context);
+    }
   }
 
 }

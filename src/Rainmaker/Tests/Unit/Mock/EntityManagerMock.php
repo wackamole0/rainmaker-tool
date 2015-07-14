@@ -1,6 +1,6 @@
 <?php
 
-namespace Rainmaker\Tests\Mock;
+namespace Rainmaker\Tests\Unit\Mock;
 
 /**
  *
@@ -9,7 +9,7 @@ class EntityManagerMock
 {
 
   public $mockClassMap = array(
-    'Rainmaker:Container' => '\Rainmaker\Tests\Mock\ContainerRepositoryMock'
+    'Rainmaker:Container' => '\Rainmaker\Tests\Unit\Mock\ContainerRepositoryMock'
   );
 
   protected $mockClassCache = array();
