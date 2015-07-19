@@ -16,7 +16,7 @@ class AddProjectDnsSettings extends Task
   public function performTask()
   {
     $dns = new BindManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
-    $dns->configureDnsZoneForProjectContainer($this->getContainer());
+    $dns->configureDnsZoneForProjectContainer($this->getContainer(), true);
   }
 
 }

@@ -2,6 +2,8 @@
 
 namespace Rainmaker\ComponentManager;
 
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 use Rainmaker\Entity\Container;
 use Rainmaker\Util\Template;
 
@@ -17,7 +19,7 @@ class BindManager extends ComponentManager {
    *
    * @param \Rainmaker\Entity\Container $container
    */
-  public function configureDnsZoneForProjectContainer(Container $container)
+  public function configureDnsZoneForProjectContainer(Container $container, $reloadBindService = false)
   {
     $this->container = $container;
 
@@ -26,6 +28,9 @@ class BindManager extends ComponentManager {
     $this->writeDnsZonePtrFile();
     $this->writeRainmakerDbFile();
     $this->writeBindLocalConfFile();
+    if ($reloadBindService) {
+      $this->reloadBindService();
+    }
   }
 
   /**
@@ -120,6 +125,16 @@ class BindManager extends ComponentManager {
 
     $file = '/var/lib/lxc/services/rootfs/etc/bind/named.conf.local';
     $this->getFilesystem()->putFileContents($file, $config);
+  }
+
+  protected function reloadBindService()
+  {
+    try {
+      $process = new Process('service bind9 reload');
+      $this->getProcessRunner()->run($process);
+    } catch (ProcessFailedException $e) {
+      echo $e->getMessage();
+    }
   }
 
 }

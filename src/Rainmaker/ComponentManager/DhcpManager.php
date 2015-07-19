@@ -2,8 +2,10 @@
 
 namespace Rainmaker\ComponentManager;
 
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
+use Rainmaker\Entity\Container;
 use Rainmaker\Util\Template;
-use \Rainmaker\Entity\Container;
 
 /**
  * A class for managing the ISC DHCP Server service in a Rainmaker environment
@@ -17,7 +19,7 @@ class DhcpManager extends ComponentManager {
    *
    * @param Container $container
    */
-  public function createProjectDhcpSettings(Container $container)
+  public function createProjectDhcpSettings(Container $container, $reloadDhcpService = false)
   {
     $this->container = $container;
     $this->writeDhcpHostFile();
@@ -25,6 +27,9 @@ class DhcpManager extends ComponentManager {
     $this->writeDhcpClassFile();
     $this->writeDhcpClassIncludeFile();
     $this->writeDhcpSubnetFile();
+    if ($reloadDhcpService) {
+      $this->reloadDhcpService();
+    }
   }
 
   /**
@@ -95,6 +100,16 @@ class DhcpManager extends ComponentManager {
 
     $file = '/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.subnet.conf.d/10.100.0.0.conf';
     $this->getFilesystem()->putFileContents($file, $config);
+  }
+
+  protected function reloadDhcpService()
+  {
+    try {
+      $process = new Process('service isc-dhcp-server restart');
+      $this->getProcessRunner()->run($process);
+    } catch (ProcessFailedException $e) {
+      echo $e->getMessage();
+    }
   }
 
 }

@@ -23,7 +23,7 @@ class AddProjectDhcpSettings extends Task
       $this->getEntityManager()->getRepository('Rainmaker:Container')->getNextAvailableNetworkHostAddress($this->getContainer()));
 
     $dhcp = new DhcpManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
-    $dhcp->createProjectDhcpSettings($this->getContainer());
+    $dhcp->createProjectDhcpSettings($this->getContainer(), true);
   }
 
 }
