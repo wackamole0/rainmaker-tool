@@ -15,6 +15,8 @@ class ConfigureLinuxContainer extends Task
 
   public function performTask()
   {
+    $this->log(\Monolog\Logger::DEBUG, 'Configuring container');
+
     $lxc = new LxcManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
     $lxc->configureContainer($this->getContainer());
   }

@@ -555,6 +555,11 @@ class Container
     return $cname;
   }
 
+  public function shortHostname()
+  {
+    return reset(explode('.', $this->getHostname()));
+  }
+
   public function reverseHostname()
   {
     return implode('.', array_reverse(explode('.', $this->getHostname())));
@@ -581,85 +586,30 @@ class Container
     return implode('.', array_reverse(explode('.', $this->networkPrefix())));
   }
 
-  /**
-   * @todo This needs a proper implementation
-   *
-   * @return string
-   */
-  public function getIpAddrRangeMin()
+  public function reverseIPAddress()
   {
-    return '10.100.1.1';
+    return implode('.', array_reverse(explode('.', $this->getIPAddress())));
   }
 
   /**
-   * @todo This needs a proper implementation
-   *
-   * @return string
-   */
-  public function getIpAddrRangeMax()
-  {
-    return '10.100.1.254';
-  }
-
-  /**
-   * @todo This needs a proper implementation
-   *
    * @return array
    */
-  public function getPrimaryNameServers()
+  public function getDnsRecord()
   {
     return array(
-      'ns.rainmaker.localdev',
-      'ns.test.localdev'
+      'hostname'  => reset(explode('.', $this->getHostname())),
+      'ipAddress' => $this->getIPAddress()
     );
   }
 
   /**
-   * @todo This needs a proper implementation
-   *
    * @return array
    */
-  public function getNameServerRecords()
+  public function getDnsPtrRecord()
   {
     return array(
-      array(
-        'hostname'  => 'ns.rainmaker.localdev.',
-        'ipAddress' => '10.100.0.2',
-      ),
-      array(
-        'hostname'  => 'ns',
-        'ipAddress' => '10.100.0.2',
-      )
-    );
-  }
-
-  /**
-   * @todo This needs a proper implementation
-   *
-   * @return array
-   */
-  public function getDnsRecords()
-  {
-    return array(
-      array(
-        'hostname'  => 'cluster',
-        'ipAddress' => '10.100.1.1',
-      )
-    );
-  }
-
-  /**
-   * @todo This needs a proper implementation
-   *
-   * @return array
-   */
-  public function getDnsPtrRecords()
-  {
-    return array(
-      array(
-        'hostname'  => 'cluster.test.localdev.',
-        'ipAddress' => '1',
-      )
+      'hostname'  => $this->getIPAddress() . '.',
+      'ipAddress' => reset(explode('.', $this->reverseIPAddress()))
     );
   }
 

@@ -15,6 +15,8 @@ class CreateLinuxContainer extends Task
 
   public function performTask()
   {
+    $this->log(\Monolog\Logger::DEBUG, 'Constructing container');
+
     $lxc = new LxcManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
     $lxc->createContainer($this->getContainer());
   }

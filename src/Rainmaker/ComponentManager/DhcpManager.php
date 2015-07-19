@@ -50,7 +50,7 @@ class DhcpManager extends ComponentManager {
 //    $containers = $this->getEntityManager()->getRepository('Rainmaker:Container')->getAllContainersOrderedForHostsInclude();
 //    var_dump($containers);
     $config = Template::render('dhcp/dhcpd.host.conf.twig', array(
-      'containers' => $this->getEntityManager()->getRepository('Rainmaker:Container')->getAllContainersOrderedForHostsInclude(),
+      'containers' => $this->getEntityManager()->getRepository('Rainmaker:Container')->getAllContainersOrderedForHostsInclude()
     ));
 
     $file = '/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.host.conf';
@@ -63,7 +63,7 @@ class DhcpManager extends ComponentManager {
   protected function writeDhcpClassFile()
   {
     $config = Template::render('dhcp/class.twig', array(
-      'name' => $this->getContainer()->getName(),
+      'name' => $this->getContainer()->getName()
     ));
 
     $file = '/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.class.conf.d/' . $this->getContainer()->reverseDomain() . '.conf';
@@ -76,7 +76,7 @@ class DhcpManager extends ComponentManager {
   protected function writeDhcpClassIncludeFile()
   {
     $config = Template::render('dhcp/dhcpd.class.conf.twig', array(
-      'containers' => $this->getEntityManager()->getRepository('Rainmaker:Container')->getAllParentContainers(),
+      'containers' => $this->getEntityManager()->getRepository('Rainmaker:Container')->getAllParentContainers()
     ));
 
     $file = '/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.class.conf';
@@ -89,7 +89,8 @@ class DhcpManager extends ComponentManager {
   protected function writeDhcpSubnetFile()
   {
     $config = Template::render('dhcp/subnet.twig', array(
-      'containers' => $this->getEntityManager()->getRepository('Rainmaker:Container')->getAllParentContainers(),
+      'repo' => $this->getEntityManager()->getRepository('Rainmaker:Container'),
+      'containers' => $this->getEntityManager()->getRepository('Rainmaker:Container')->getAllParentContainers()
     ));
 
     $file = '/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.subnet.conf.d/10.100.0.0.conf';

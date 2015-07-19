@@ -8,11 +8,11 @@ $TTL {{ container.getDnsZoneTtl() }}
 )
 ;
 ; name servers - NS records
-{% for nameserver in container.getPrimaryNameServers() %}
+{% for nameserver in repo.getPrimaryNameServers(container) %}
                         IN      NS              {{ nameserver }}.
 {% endfor %}
 
 ; PTR Records
-{% for record in container.getDnsPtrRecords() %}
+{% for record in repo.getDnsPtrRecordsForProjectContainer(container) %}
 {{ record.ipAddress|pad(22, ' ') }}  IN      PTR     {{ record.hostname }}
 {% endfor %}

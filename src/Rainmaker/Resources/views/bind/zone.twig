@@ -8,16 +8,16 @@ $TTL {{ container.getDnsZoneTtl() }}
 )
 ;
 ; name servers - NS records
-{% for nameserver in container.getPrimaryNameServers() %}
+{% for nameserver in repo.getPrimaryNameServers(container) %}
                         IN      NS              {{ nameserver }}.
 {% endfor %}
 
 ; name servers - A records
-{% for record in container.getNameServerRecords() %}
+{% for record in repo.getNameServerRecords(container) %}
 {{ record.hostname|pad(22, ' ') }}  IN      A               {{ record.ipAddress }}
 {% endfor %}
 
 ; Define hostname -> IP pairs which you wish to resolve
-{% for record in container.getDnsRecords() %}
+{% for record in repo.getDnsRecordsForProjectContainer(container) %}
 {{ record.hostname|pad(22, ' ') }}  IN      A               {{ record.ipAddress }}
 {% endfor %}

@@ -17,10 +17,10 @@ class AddProjectDhcpSettings extends Task
   {
     // Set the network
     $this->getContainer()->setNetworkAddress(
-      $this->getEntityManager()->getRepository('Rainmaker:Container')->getNextAvailableNetworkAddress());
+      $this->getEntityManager()->getRepository('Rainmaker:Container')->getNextAvailableNetwork());
     // Set the IP addr
     $this->getContainer()->setIPAddress(
-      $this->getEntityManager()->getRepository('Rainmaker:Container')->getNextAvailableIPAddress($this->getContainer()));
+      $this->getEntityManager()->getRepository('Rainmaker:Container')->getNextAvailableNetworkHostAddress($this->getContainer()));
 
     $dhcp = new DhcpManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
     $dhcp->createProjectDhcpSettings($this->getContainer());

@@ -11,11 +11,11 @@ use Rainmaker\RainmakerException;
  */
 class ContainerRepository extends EntityRepository
 {
-  protected $defaultNetworkPrefix         = '10.100';
-  protected $defaultNetworkMin            = 1;
-  protected $defaultNetworkMax            = 255;
-  protected $defaultNetworkAddressMin     = 1;
-  protected $defaultNetworkAddressMax     = 254;
+  protected $defaultNetworkPrefix             = '10.100';
+  protected $defaultNetworkMin                = 1;
+  protected $defaultNetworkMax                = 255;
+  protected $defaultNetworkHostAddressMin     = 1;
+  protected $defaultNetworkHostAddressMax     = 254;
 
   public function createContainer($name, $friendlyName)
   {
@@ -36,6 +36,32 @@ class ContainerRepository extends EntityRepository
   {
     return NULL !== $this->findOneByName($name);
   }
+
+  public function getAllParentContainers() {
+    return $this->createQueryBuilder('c')
+      ->where('c.parentId IS NULL')
+      ->orderBy('c.name', 'ASC')
+      ->getQuery()
+      ->getResult();
+  }
+
+  public function getProjectParentContainers()
+  {
+    //@todo Can we do away with this alias?
+    return $this->getAllParentContainers();
+  }
+
+  public function getProjectBranchContainers(Container $container)
+  {
+    return $this->createQueryBuilder('c')
+      ->where('c.parentId = :parentId')
+      ->setParameter('parentId', $container->getId())
+      ->orderBy('c.name', 'ASC')
+      ->getQuery()
+      ->getResult();
+  }
+
+  // Network and IP address methods
 
   public function getAvailableNetworks()
   {
@@ -62,35 +88,29 @@ class ContainerRepository extends EntityRepository
     return $networks;
   }
 
-  public function getProjectParentContainers()
-  {
-    //@todo Next to execute a DB query here
-    return array();
-  }
-
-  public function getNextAvailableNetworkAddress()
+  public function getNextAvailableNetwork()
   {
     $availableNetworks = $this->getAvailableNetworks();
     return reset($availableNetworks);
   }
 
-  public function getAvailableNetworkAddresses(Container $container)
+  public function getAvailableNetworkHostAddresses(Container $container)
   {
-    return array_diff($this->getAllNetworkAddresses($container), $this->getAllNetworkAddressesInUse($container));
+    return array_diff($this->getAllNetworkHostAddresses($container), $this->getAllNetworkHostAddressesInUse($container));
   }
 
-  public function getAllNetworkAddresses(Container $container)
+  public function getAllNetworkHostAddresses(Container $container)
   {
     $networkPrefix = $container->networkPrefix();
-    $networkAddresses = array();
-    for($i = $this->defaultNetworkAddressMin; $i <= $this->defaultNetworkAddressMax; $i++) {
-      $networkAddresses[] = $networkPrefix . '.' . $i;
+    $networkHostAddresses = array();
+    for($i = $this->defaultNetworkHostAddressMin; $i <= $this->defaultNetworkHostAddressMax; $i++) {
+      $networkHostAddresses[] = $networkPrefix . '.' . $i;
     }
-    sort($networkAddresses);
-    return $networkAddresses;
+    sort($networkHostAddresses);
+    return $networkHostAddresses;
   }
 
-  public function getAllNetworkAddressesInUse(Container $container)
+  public function getAllNetworkHostAddressesInUse(Container $container)
   {
     $addresses = array();
     foreach ($this->getProjectBranchContainers($container) as $projectBranchContainer) {
@@ -100,27 +120,125 @@ class ContainerRepository extends EntityRepository
     return $addresses;
   }
 
-  public function getProjectBranchContainers(Container $container)
+  public function getNextAvailableNetworkHostAddress(Container $container)
   {
-    //@todo Next to execute a DB query here
-    return array();
-  }
-
-  public function getNextAvailableIPAddress(Container $container)
-  {
-    $availableIps = $this->getAvailableNetworkAddresses($container);
+    $availableIps = $this->getAvailableNetworkHostAddresses($container);
     return reset($availableIps);
   }
 
-  public function getAllContainersOrderedForHostsInclude() {
-    //@todo Next to execute a DB query here
-    return array();
+  /**
+   * @return string
+   */
+  public function getNetworkHostAddrRangeMin(Container $container)
+  {
+    $project = $this->getParentContainer($container);
+    return $project->networkPrefix() . '.' . $this->defaultNetworkHostAddressMin;
   }
 
-  public function getAllParentContainers() {
-    //@todo Next to execute a DB query here
-    return array();
+  /**
+   * @return string
+   */
+  public function getNetworkHostAddrRangeMax(Container $container)
+  {
+    $project = $this->getParentContainer($container);
+    return $project->networkPrefix() . '.' . $this->defaultNetworkHostAddressMax;
   }
+
+  // DHCP methods
+
+  public function getAllContainersOrderedForHostsInclude() {
+    return $this->createQueryBuilder('c')
+      ->orderBy('c.name', 'ASC')
+      ->getQuery()
+      ->getResult();
+  }
+
+  // DNS methods
+
+  /**
+   * @return array
+   */
+  public function getPrimaryNameServers(Container $container)
+  {
+    $project = $this->getParentContainer($container);
+    return array(
+      'ns.rainmaker.localdev',
+      'ns.' . $project->getDomain()
+    );
+  }
+
+  /**
+   * @return array
+   */
+  public function getNameServerRecords(Container $container)
+  {
+    return array(
+      array(
+        'hostname'  => 'ns.rainmaker.localdev.',
+        'ipAddress' => '10.100.0.2',
+      ),
+      array(
+        'hostname'  => 'ns',
+        'ipAddress' => '10.100.0.2',
+      )
+    );
+  }
+
+  /**
+   * @return array
+   */
+  public function getDnsRecordsForProjectContainer(Container $container)
+  {
+    $project = $this->getParentContainer($container);
+    $records = array(
+      array(
+        'hostname'  => $project->shortHostname(),
+        'ipAddress' => $project->getIPAddress(),
+      )
+    );
+
+    $branches = $this->getProjectBranchContainers($project);
+    usort($branches, array($this, 'cmpFqdnHostname'));
+    foreach ($branches as $branch) {
+      $hostname = $branch->shortHostname();
+      if ($branch->getHostname() == $project->getDomain()) {
+        $hostname = '@';
+      }
+      $records[] = array(
+        'hostname'  => $hostname,
+        'ipAddress' => $branch->getIPAddress(),
+      );
+    }
+
+    return $records;
+  }
+
+  /**
+   * @return array
+   */
+  public function getDnsPtrRecordsForProjectContainer(Container $container)
+  {
+    $project = $this->getParentContainer($container);
+    $records = array(
+      array(
+        'hostname'  => $project->getHostname() . '.',
+        'ipAddress' => reset(explode('.', $project->reverseIPAddress())),
+      )
+    );
+
+    $branches = $this->getProjectBranchContainers($project);
+    usort($branches, array($this, 'cmpFqdnHostname'));
+    foreach ($branches as $branch) {
+      $records[] = array(
+        'hostname'  => $branch->getHostname() . '.',
+        'ipAddress' => reset(explode('.', $branch->reverseIPAddress())),
+      );
+    }
+
+    return $records;
+  }
+
+  // Utility methods
 
   public static function friendlyNameToContainerName($fname)
   {
@@ -129,6 +247,27 @@ class ContainerRepository extends EntityRepository
     }
 
     return $cname;
+  }
+
+  public static function cmpFqdnHostname(Container $a, Container $b)
+  {
+    $aHostname = $a->reverseHostname();
+    $bHostname = $b->reverseHostname();
+
+    if ($aHostname == $bHostname) {
+      return 0;
+    }
+
+    return $aHostname < $bHostname ? -1 : 1;
+  }
+
+  protected function getParentContainer(Container $container)
+  {
+    if (null !== ($id = $container->getParentId())) {
+      return $this->findOneById($id);
+    }
+
+    return $container;
   }
 
 }

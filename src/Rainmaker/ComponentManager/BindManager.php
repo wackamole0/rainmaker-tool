@@ -74,7 +74,8 @@ class BindManager extends ComponentManager {
   protected function writeDnsZoneFile()
   {
     $config = Template::render('bind/zone.twig', array(
-      'container' => $this->getContainer(),
+      'repo' => $this->getEntityManager()->getRepository('Rainmaker:Container'),
+      'container' => $this->getContainer()
     ));
 
     $file = '/var/lib/lxc/services/rootfs/etc/bind/db.rainmaker/db.' . $this->getContainer()->getDomain();
@@ -87,7 +88,8 @@ class BindManager extends ComponentManager {
   protected function writeDnsZonePtrFile()
   {
     $config = Template::render('bind/ptr-zone.twig', array(
-      'container' => $this->getContainer(),
+      'repo' => $this->getEntityManager()->getRepository('Rainmaker:Container'),
+      'container' => $this->getContainer()
     ));
 
     $file = '/var/lib/lxc/services/rootfs/etc/bind/db.rainmaker/db.' . $this->getContainer()->networkPrefix();
@@ -100,7 +102,7 @@ class BindManager extends ComponentManager {
   protected function writeRainmakerDbFile()
   {
     $config = Template::render('bind/db.rainmaker.twig', array(
-      'container' => $this->getContainer(),
+      'container' => $this->getContainer()
     ));
 
     $file = '/var/lib/lxc/services/rootfs/etc/bind/named.conf.rainmaker/' . $this->getContainer()->getName() . '.conf';

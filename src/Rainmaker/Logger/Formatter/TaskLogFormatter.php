@@ -22,28 +22,15 @@ class TaskLogFormatter extends NormalizerFormatter
         $output = '';
 
         $time = 0;
-        if (!empty($vars['datetime'])) {
-            $time = strtotime($vars['datetime']);
+        if (!empty($vars['extra']['executionTime'])) {
+            $time = $vars['extra']['executionTime'];
         }
-        $output .= sprintf('[%10s]', round($time - 1436772795, 3));
+        $output .= sprintf('[%10.3F]', round($time, 3));
 
         $output .= ' ' . sprintf('(%-9s)', !empty($vars['level_name']) ? $vars['level_name'] : '');
         $output .= ' ' . (!empty($vars['message']) ? $this->stringify($vars['message']) : '');
 
-//        foreach ($vars['extra'] as $var => $val) {
-//            if (false !== strpos($output, '%extra.'.$var.'%')) {
-//                $output = str_replace('%extra.'.$var.'%', $this->stringify($val), $output);
-//                unset($vars['extra'][$var]);
-//            }
-//        }
-//
-//        foreach ($vars as $var => $val) {
-//            if (false !== strpos($output, '%'.$var.'%')) {
-//                $output = str_replace('%'.$var.'%', $this->stringify($val), $output);
-//            }
-//        }
-
-        return $output;
+        return $output . "\n";
     }
 
     public function formatBatch(array $records)

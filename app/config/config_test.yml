@@ -8,6 +8,10 @@ framework:
     profiler:
         collect: false
 
+doctrine:
+    dbal:
+        path: "%kernel.root_dir%/rainmaker-test.db"
+
 web_profiler:
     toolbar: false
     intercept_redirects: false
