@@ -10,28 +10,32 @@ class ContainerRepositoryTest extends WebTestCase
   protected $em;
   protected $contRepo;
 
+  protected function setUp()
+  {
+    error_reporting(E_ALL);
+    static::bootKernel();
+    $this->em = static::$kernel->getContainer()->get('doctrine')->getManager();
+    $this->contRepo = $this->em->getRepository('Rainmaker:Container');
+  }
+
   public function testGetProjectParentContainers()
   {
-    $this->setupTest();
     $this->assertCount(4, $this->contRepo->getProjectParentContainers());
   }
 
   public function testGetProjectBranchContainers()
   {
-    $this->setupTest();
     $container = $this->contRepo->findOneByName('test4');
     $this->assertCount(3, $this->contRepo->getProjectBranchContainers($container));
   }
 
   public function testGetAllParentContainers()
   {
-    $this->setupTest();
     $this->assertCount(4, $this->contRepo->getAllParentContainers());
   }
 
   public function testGetAllContainersOrderedForHostsInclude()
   {
-    $this->setupTest();
     $containers = $this->contRepo->getAllContainersOrderedForHostsInclude();
     $this->assertCount(10, $containers);
     $lastContainer = '';
@@ -43,21 +47,18 @@ class ContainerRepositoryTest extends WebTestCase
 
   public function testGetNetworkHostAddrRangeMin()
   {
-    $this->setupTest();
     $project = $this->contRepo->findOneByName('test4');
     $this->assertEquals('10.100.4.1', $this->contRepo->getNetworkHostAddrRangeMin($project));
   }
 
   public function testGetNetworkHostAddrRangeMax()
   {
-    $this->setupTest();
     $project = $this->contRepo->findOneByName('test4');
     $this->assertEquals('10.100.4.254', $this->contRepo->getNetworkHostAddrRangeMax($project));
   }
 
   public function testGetPrimaryNameServers()
   {
-    $this->setupTest();
     $project = $this->contRepo->findOneByName('test4');
     $this->assertEquals(
       array(
@@ -70,7 +71,6 @@ class ContainerRepositoryTest extends WebTestCase
 
   public function testGetNameServerRecords()
   {
-    $this->setupTest();
     $project = $this->contRepo->findOneByName('test3');
     $this->assertEquals(
       array(
@@ -89,7 +89,6 @@ class ContainerRepositoryTest extends WebTestCase
 
   public function testGetDnsRecordsForProjectContainer()
   {
-    $this->setupTest();
     $project = $this->contRepo->findOneByName('test4');
     $this->assertEquals(
       array(
@@ -116,7 +115,6 @@ class ContainerRepositoryTest extends WebTestCase
 
   public function testGetDnsPtrRecordsForProjectContainer()
   {
-    $this->setupTest();
     $project = $this->contRepo->findOneByName('test4');
     $this->assertEquals(
       array(
@@ -139,15 +137,6 @@ class ContainerRepositoryTest extends WebTestCase
       ),
       $this->contRepo->getDnsPtrRecordsForProjectContainer($project)
     );
-  }
-
-  //
-
-  protected function setupTest()
-  {
-    static::bootKernel();
-    $this->em = static::$kernel->getContainer()->get('doctrine')->getManager();
-    $this->contRepo = $this->em->getRepository('Rainmaker:Container');
   }
 
 }

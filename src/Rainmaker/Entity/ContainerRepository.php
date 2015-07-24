@@ -17,12 +17,14 @@ class ContainerRepository extends EntityRepository
   protected $defaultNetworkHostAddressMin     = 1;
   protected $defaultNetworkHostAddressMax     = 254;
 
-  public function createContainer($name, $friendlyName)
+  public function createContainer($name, $friendlyName = '', $persist = false)
   {
     $container = new Container();
     $container->setName($name);
     $container->setFriendlyName($friendlyName);
-    $this->saveContainer($container);
+    if ($persist) {
+      $this->saveContainer($container);
+    }
     return $container;
   }
 
@@ -219,19 +221,21 @@ class ContainerRepository extends EntityRepository
   public function getDnsPtrRecordsForProjectContainer(Container $container)
   {
     $project = $this->getParentContainer($container);
+    $explodedIp = explode('.', $project->reverseIPAddress());
     $records = array(
       array(
         'hostname'  => $project->getHostname() . '.',
-        'ipAddress' => reset(explode('.', $project->reverseIPAddress())),
+        'ipAddress' => reset($explodedIp),
       )
     );
 
     $branches = $this->getProjectBranchContainers($project);
     usort($branches, array($this, 'cmpFqdnHostname'));
     foreach ($branches as $branch) {
+      $explodedIp = explode('.', $branch->reverseIPAddress());
       $records[] = array(
         'hostname'  => $branch->getHostname() . '.',
-        'ipAddress' => reset(explode('.', $branch->reverseIPAddress())),
+        'ipAddress' => reset($explodedIp),
       );
     }
 

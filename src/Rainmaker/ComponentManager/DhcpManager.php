@@ -105,7 +105,7 @@ class DhcpManager extends ComponentManager {
   protected function reloadDhcpService()
   {
     try {
-      $process = new Process('service isc-dhcp-server restart');
+      $process = new Process('lxc-attach -n services -- service isc-dhcp-server restart');
       $this->getProcessRunner()->run($process);
     } catch (ProcessFailedException $e) {
       echo $e->getMessage();

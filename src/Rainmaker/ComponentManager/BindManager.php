@@ -71,6 +71,8 @@ class BindManager extends ComponentManager {
     if (empty($this->getContainer()->getDnsZoneNegCacheTtl())) {
       $this->getContainer()->setDnsZoneNegCacheTtl(604800);
     }
+
+    $this->getEntityManager()->getRepository('Rainmaker:Container')->saveContainer($this->getContainer());
   }
 
   /**
@@ -130,7 +132,7 @@ class BindManager extends ComponentManager {
   protected function reloadBindService()
   {
     try {
-      $process = new Process('service bind9 reload');
+      $process = new Process('lxc-attach -n services -- service bind9 reload');
       $this->getProcessRunner()->run($process);
     } catch (ProcessFailedException $e) {
       echo $e->getMessage();

@@ -17,6 +17,11 @@ use Rainmaker\Logger\TaskLogger;
 class CreateTest extends \PHPUnit_Framework_TestCase
 {
 
+  protected function setUp()
+  {
+    error_reporting(E_ALL);
+  }
+
   /**
    * Tests the successful creation of a new Rainmaker project Linux container
    */

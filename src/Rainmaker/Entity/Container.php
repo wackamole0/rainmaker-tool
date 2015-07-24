@@ -13,11 +13,26 @@ use Rainmaker\RainmakerException;
 class Container
 {
 
-  const STATE_OFFLINE           =  0;
-  const STATE_CREATING_LXC      =  1;
-  const STATE_STARTING_LXC      =  2;
-  const STATE_PROVISIONING_LXC  =  3;
-  const STATE_ONLINE            = 10;
+  const STATE_PENDING_PROVISIONING  =  0;
+  const STATE_PROVISIONING          =  1;
+  const STATE_STOPPED               =  2;
+  const STATE_STARTING              =  3;
+  const STATE_RUNNING               =  4;
+  const STATE_STOPPING              =  5;
+  const STATE_DESTROYING            =  6;
+
+  const STATE_ERROR                 = -1;
+
+  protected static $statuses = array(
+    self::STATE_PENDING_PROVISIONING  => 'Pending Prov.',
+    self::STATE_PROVISIONING          => 'Provisioning',
+    self::STATE_STOPPED               => 'Stopped',
+    self::STATE_STARTING              => 'Starting',
+    self::STATE_RUNNING               => 'Running',
+    self::STATE_STOPPING              => 'Stopping',
+    self::STATE_DESTROYING            => 'Destroying',
+    self::STATE_ERROR                 => 'Error'
+  );
 
   /**
    * @ORM\Column(type="integer")
@@ -546,6 +561,28 @@ class Container
     return $this;
   }
 
+  /**
+   * Get the current numerical status of the container
+   *
+   * @return int
+   */
+  public function getState()
+  {
+    return $this->state;
+  }
+
+  /**
+   * Set the current numerical status of this container
+   *
+   * @param int $state
+   * @return $this
+   */
+  public function setState($state)
+  {
+    $this->state = $state;
+    return $this;
+  }
+
   public static function friendlyNameToContainerName($fname)
   {
     if (NULL === ($cname = preg_replace('/[^a-z0-9\.\-_]/', '-', substr(strtolower($fname), 0, 20)))) {
@@ -557,7 +594,8 @@ class Container
 
   public function shortHostname()
   {
-    return reset(explode('.', $this->getHostname()));
+    $explodedIp = explode('.', $this->getHostname());
+    return reset($explodedIp);
   }
 
   public function reverseHostname()
@@ -589,6 +627,11 @@ class Container
   public function reverseIPAddress()
   {
     return implode('.', array_reverse(explode('.', $this->getIPAddress())));
+  }
+
+  public function getStatusText()
+  {
+    return static::$statuses[$this->getState()];
   }
 
   /**

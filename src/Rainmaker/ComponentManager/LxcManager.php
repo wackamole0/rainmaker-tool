@@ -43,6 +43,7 @@ class LxcManager extends ComponentManager {
     $this->getContainer()->setLxcUtsName($this->getLxcConfigurationSettingValue('lxc.utsname'));
     $this->getContainer()->setLxcHwAddr($this->getLxcConfigurationSettingValue('lxc.network.hwaddr'));
     $this->getContainer()->setLxcRootFs($this->getLxcConfigurationSettingValue('lxc.rootfs'));
+    $this->getEntityManager()->getRepository('Rainmaker:Container')->saveContainer($this->getContainer());
 
     $this->writeLxcConfigurationFile();
   }

@@ -19,6 +19,11 @@ class ContainerRepositoryMock extends ContainerRepository
 
   }
 
+  public function saveContainer(Container $container)
+  {
+    return null;
+  }
+
   public function getProjectContainers()
   {
     return array();
@@ -29,7 +34,7 @@ class ContainerRepositoryMock extends ContainerRepository
     return array();
   }
 
-  public function getProjectBranchContainers()
+  public function getProjectBranchContainers(Container $container)
   {
     return array();
   }
