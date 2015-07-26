@@ -54,6 +54,7 @@ class Application extends ParentApplication {
   protected function getCommands()
   {
     $commands = array();
+    $commands[] = new Command\ProjectListCommand();
     $commands[] = new Command\ProjectCreateCommand();
     $commands[] = new Command\ProjectDestroyCommand();
     $commands[] = new Command\WelcomeCommand();

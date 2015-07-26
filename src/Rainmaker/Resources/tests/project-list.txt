@@ -1,0 +1,14 @@
++--------------------------------+-----------------+
+| ID                             | Status          |
++--------------------------------+-----------------+
+| test                           | Stopped         |
+| test2                          | Stopped         |
+|  \_ test2.prod                 | Stopped         |
+| test3                          | Stopped         |
+|  \_ test3.dev                  | Stopped         |
+|  \_ test3.prod                 | Stopped         |
+| test4                          | Stopped         |
+|  \_ test4.dev                  | Stopped         |
+|  \_ test4.fet001               | Stopped         |
+|  \_ test4.prod                 | Stopped         |
++--------------------------------+-----------------+
