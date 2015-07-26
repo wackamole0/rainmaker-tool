@@ -2,6 +2,7 @@
 
 namespace Rainmaker\Tests\Unit\Task\Project;
 
+use Rainmaker\Tests\AbstractUnitTest;
 use Rainmaker\Entity\Container;
 use Rainmaker\Task\Project\Create;
 use Rainmaker\Tests\Unit\Mock\EntityManagerMock;
@@ -14,19 +15,16 @@ use Rainmaker\Logger\TaskLogger;
  *
  * @package Rainmaker\Tests\Unit\Task\Project
  */
-class CreateTest extends \PHPUnit_Framework_TestCase
+class CreateTest extends AbstractUnitTest
 {
 
-  protected function setUp()
-  {
-    error_reporting(E_ALL);
-  }
-
   /**
-   * Tests the successful creation of a new Rainmaker project Linux container
+   * Tests the successful creation of a new Rainmaker project Linux container.
    */
-  public function testCreate()
+  public function testCreateProject()
   {
+    $pathToTestAcceptanceFiles = $this->getPathToTestAcceptanceFilesDirectory() . '/createProject';
+
     $project = $this->createDummyProject();
     $task = new Create();
     $task->setContainer($project);
@@ -53,23 +51,39 @@ class CreateTest extends \PHPUnit_Framework_TestCase
     $this->assertEquals('00:16:3e:e0:5c:c3', $task->getContainer()->getLxcHwAddr());
     $this->assertEquals('/var/lib/lxc/test/rootfs', $task->getContainer()->getLxcRootFs());
 
-    $pathToTestCheckFiles = dirname(__FILE__) . '/../../../..';
-    $this->assertEquals(file_get_contents($pathToTestCheckFiles . '/Resources/tests/lxc/lxc_config'), $filesystemMock->getFileContents('/var/lib/lxc/' . $task->getContainer()->getName() . '/config'));
-    $this->assertEquals(file_get_contents($pathToTestCheckFiles . '/Resources/tests/lxc/hostname'), $filesystemMock->getFileContents('/var/lib/lxc/' . $task->getContainer()->getName() . '/rootfs/etc/hostname'));
-    $this->assertEquals(file_get_contents($pathToTestCheckFiles . '/Resources/tests/lxc/hosts'), $filesystemMock->getFileContents('/var/lib/lxc/' . $task->getContainer()->getName() . '/rootfs/etc/hosts'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/lxc/lxc_config'), $filesystemMock->getFileContents('/var/lib/lxc/' . $task->getContainer()->getName() . '/config'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/lxc/hostname'), $filesystemMock->getFileContents('/var/lib/lxc/' . $task->getContainer()->getName() . '/rootfs/etc/hostname'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/lxc/hosts'), $filesystemMock->getFileContents('/var/lib/lxc/' . $task->getContainer()->getName() . '/rootfs/etc/hosts'));
 
-    $this->assertEquals(file_get_contents($pathToTestCheckFiles . '/Resources/tests/dhcp/host_localdev.test.cluster.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.host.conf.d/localdev.test.cluster.conf'));
-    $this->assertEquals(file_get_contents($pathToTestCheckFiles . '/Resources/tests/dhcp/dhcpd.host.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.host.conf'));
-    $this->assertEquals(file_get_contents($pathToTestCheckFiles . '/Resources/tests/dhcp/class_localdev.test.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.class.conf.d/localdev.test.conf'));
-    $this->assertEquals(file_get_contents($pathToTestCheckFiles . '/Resources/tests/dhcp/dhcpd.class.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.class.conf'));
-    $this->assertEquals(file_get_contents($pathToTestCheckFiles . '/Resources/tests/dhcp/subnet_10.100.0.0.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.subnet.conf.d/10.100.0.0.conf'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/dhcp/host_localdev.test.cluster.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.host.conf.d/localdev.test.cluster.conf'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/dhcp/dhcpd.host.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.host.conf'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/dhcp/class_localdev.test.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.class.conf.d/localdev.test.conf'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/dhcp/dhcpd.class.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.class.conf'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/dhcp/subnet_10.100.0.0.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.subnet.conf.d/10.100.0.0.conf'));
 
-    $this->assertEquals(file_get_contents($pathToTestCheckFiles . '/Resources/tests/bind/db.test.localdev'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/db.rainmaker/db.test.localdev'));
-    $this->assertEquals(file_get_contents($pathToTestCheckFiles . '/Resources/tests/bind/db.10.100.1'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/db.rainmaker/db.10.100.1'));
-    $this->assertEquals(file_get_contents($pathToTestCheckFiles . '/Resources/tests/bind/named.test.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/named.conf.rainmaker/test.conf'));
-    $this->assertEquals(file_get_contents($pathToTestCheckFiles . '/Resources/tests/bind/named.conf.local'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/named.conf.local'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/bind/db.test.localdev'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/db.rainmaker/db.test.localdev'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/bind/db.10.100.1'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/db.rainmaker/db.10.100.1'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/bind/named.test.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/named.conf.rainmaker/test.conf'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/bind/named.conf.local'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/named.conf.local'));
 
-    $this->assertEquals(file_get_contents($pathToTestCheckFiles . '/Resources/tests/fstab'), $filesystemMock->getFileContents('/etc/fstab'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/fstab'), $filesystemMock->getFileContents('/etc/fstab'));
+  }
+
+  /**
+   * Tests the successful creation of a new Rainmaker project Linux container with branch container.
+   */
+  public function testCreateProjectAndBranch()
+  {
+    ;
+  }
+
+
+  // Utility methods
+
+
+  protected function getPathToTestAcceptanceFilesDirectory()
+  {
+    return $this->getPathToTestAcceptanceFilesBaseDirectory() . '/unit/project';
   }
 
   protected function createDummyProject()

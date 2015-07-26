@@ -2,21 +2,10 @@
 
 namespace Rainmaker\Tests\Integration\Entity;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Rainmaker\Tests\AbstractIntegrationTest;
 
-class ContainerRepositoryTest extends WebTestCase
+class ContainerRepositoryTest extends AbstractIntegrationTest
 {
-
-  protected $em;
-  protected $contRepo;
-
-  protected function setUp()
-  {
-    error_reporting(E_ALL);
-    static::bootKernel();
-    $this->em = static::$kernel->getContainer()->get('doctrine')->getManager();
-    $this->contRepo = $this->em->getRepository('Rainmaker:Container');
-  }
 
   public function testGetProjectParentContainers()
   {
