@@ -136,7 +136,6 @@ class Container
    */
   protected $state = 0;
 
-
   /**
    * Get id
    *
@@ -583,6 +582,14 @@ class Container
     return $this;
   }
 
+  /**
+   * Takes a string and returns a name which can be used as a unique identifier.
+   *
+   * @param $fname
+   * @return mixed
+   * @throws RainmakerException
+   * @deprecated ContainerRepository::friendlyNameToContainerName($fname) is preferred to this method.
+   */
   public static function friendlyNameToContainerName($fname)
   {
     if (NULL === ($cname = preg_replace('/[^a-z0-9\.\-_]/', '-', substr(strtolower($fname), 0, 20)))) {
@@ -592,22 +599,42 @@ class Container
     return $cname;
   }
 
+  /**
+   * Returns the container's fully-qualified hostname and returns the host portion.
+   *
+   * @return string|null
+   */
   public function shortHostname()
   {
     $explodedIp = explode('.', $this->getHostname());
     return reset($explodedIp);
   }
 
+  /**
+   * Returns the container's fully-qualified hostname reversed.
+   *
+   * @return string
+   */
   public function reverseHostname()
   {
     return implode('.', array_reverse(explode('.', $this->getHostname())));
   }
 
+  /**
+   * Returns the container's domain name reversed.
+   *
+   * @return string
+   */
   public function reverseDomain()
   {
     return implode('.', array_reverse(explode('.', $this->getDomain())));
   }
 
+  /**
+   * Returns the container's (sub)network prefix.
+   *
+   * @return null|string
+   */
   public function networkPrefix()
   {
     $network = $this->getNetworkAddress();
@@ -619,11 +646,21 @@ class Container
     return $networkPrefix;
   }
 
+  /**
+   * Returns the container's (sub)network prefix in reverse.
+   *
+   * @return string
+   */
   public function reverseNetworkPrefix()
   {
     return implode('.', array_reverse(explode('.', $this->networkPrefix())));
   }
 
+  /**
+   * Returns the reversal of this container's IP address.
+   *
+   * @return string
+   */
   public function reverseIPAddress()
   {
     return implode('.', array_reverse(explode('.', $this->getIPAddress())));
@@ -635,6 +672,8 @@ class Container
   }
 
   /**
+   * Returns an array mapping this container's hostname and IP address for use as a DNS A record.
+   *
    * @return array
    */
   public function getDnsRecord()
@@ -646,6 +685,8 @@ class Container
   }
 
   /**
+   * Returns an array mapping this container's hostname and IP address for use as a DNS PTR record.
+   *
    * @return array
    */
   public function getDnsPtrRecord()
@@ -653,6 +694,34 @@ class Container
     return array(
       'hostname'  => $this->getIPAddress() . '.',
       'ipAddress' => reset(explode('.', $this->reverseIPAddress()))
+    );
+  }
+
+  /**
+   * Returns an array mapping the source and target filesystem locations for this container's
+   * Rainmaker LXC cache.
+   *
+   * @return array
+   */
+  public function getFstabToolsMountPoint()
+  {
+    return array(
+      'source' => '/var/cache/lxc/rainmaker',
+      'target' => $this->getLxcRootFs() . '/var/cache/lxc/rainmaker'
+    );
+  }
+
+  /**
+   * Returns an array mapping the source and target filesystem locations for this container's
+   * NFS export.
+   *
+   * @return array
+   */
+  public function getFstabNfsMountPoint()
+  {
+    return array(
+      'source' => $this->getLxcRootFs() . '/var/www/html',
+      'target' => $this->getLxcRootFs() . '/export/rainmaker/' . $this->getName()
     );
   }
 

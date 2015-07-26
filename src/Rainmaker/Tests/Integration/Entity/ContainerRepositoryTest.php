@@ -139,4 +139,9 @@ class ContainerRepositoryTest extends WebTestCase
     );
   }
 
+  public function testGetNextAvailableNetwork()
+  {
+    $this->assertEquals('10.100.5.0', $this->contRepo->getNextAvailableNetwork());
+  }
+
 }

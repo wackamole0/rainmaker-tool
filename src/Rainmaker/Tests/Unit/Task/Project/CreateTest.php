@@ -45,7 +45,7 @@ class CreateTest extends \PHPUnit_Framework_TestCase
 
     $task->performTask();
 
-    var_dump($logger->getLogBufferContents());
+    //var_dump($logger->getLogBufferContents());
 
     $this->assertEquals('test', $task->getContainer()->getName());
     $this->assertEquals('Test', $task->getContainer()->getFriendlyName());
@@ -68,6 +68,8 @@ class CreateTest extends \PHPUnit_Framework_TestCase
     $this->assertEquals(file_get_contents($pathToTestCheckFiles . '/Resources/tests/bind/db.10.100.1'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/db.rainmaker/db.10.100.1'));
     $this->assertEquals(file_get_contents($pathToTestCheckFiles . '/Resources/tests/bind/named.test.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/named.conf.rainmaker/test.conf'));
     $this->assertEquals(file_get_contents($pathToTestCheckFiles . '/Resources/tests/bind/named.conf.local'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/named.conf.local'));
+
+    $this->assertEquals(file_get_contents($pathToTestCheckFiles . '/Resources/tests/fstab'), $filesystemMock->getFileContents('/etc/fstab'));
   }
 
   protected function createDummyProject()

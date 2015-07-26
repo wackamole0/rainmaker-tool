@@ -7,7 +7,7 @@ use Doctrine\ORM\EntityRepository;
 use Rainmaker\RainmakerException;
 
 /**
- * Doctrine ORM EntityRepository for managing the Container entity
+ * Doctrine ORM EntityRepository for managing the Container entity.
  */
 class ContainerRepository extends EntityRepository
 {
@@ -17,6 +17,14 @@ class ContainerRepository extends EntityRepository
   protected $defaultNetworkHostAddressMin     = 1;
   protected $defaultNetworkHostAddressMax     = 254;
 
+  /**
+   * Creates a new instance of the Container entity and optional saves to the database.
+   *
+   * @param $name
+   * @param string $friendlyName
+   * @param bool|FALSE $persist
+   * @return Container
+   */
   public function createContainer($name, $friendlyName = '', $persist = false)
   {
     $container = new Container();
@@ -28,17 +36,35 @@ class ContainerRepository extends EntityRepository
     return $container;
   }
 
+  /**
+   * Saves a container to the database.
+   *
+   * @param Container $container
+   */
   public function saveContainer(Container $container)
   {
     $this->getEntityManager()->persist($container);
     $this->getEntityManager()->flush();
   }
 
+  /**
+   * Checks to see if a container with the given name already exists in the database.
+   *
+   * @param $name
+   * @return bool
+   */
   public function containerExists($name)
   {
     return NULL !== $this->findOneByName($name);
   }
 
+  /**
+   * Returns an array of all the project containers. This is deprecated and getProjectParentContainers
+   * is preferred.
+   *
+   * @return Container[]
+   * @deprecated
+   */
   public function getAllParentContainers() {
     return $this->createQueryBuilder('c')
       ->where('c.parentId IS NULL')
@@ -47,12 +73,23 @@ class ContainerRepository extends EntityRepository
       ->getResult();
   }
 
+  /**
+   * Returns an array of all the project containers.
+   *
+   * @return Container[]
+   */
   public function getProjectParentContainers()
   {
     //@todo Can we do away with this alias?
     return $this->getAllParentContainers();
   }
 
+  /**
+   * Returns an array of all the branch containers for the given project container.
+   *
+   * @param Container $container
+   * @return Container[]
+   */
   public function getProjectBranchContainers(Container $container)
   {
     return $this->createQueryBuilder('c')
@@ -63,23 +100,52 @@ class ContainerRepository extends EntityRepository
       ->getResult();
   }
 
+  /**
+   * Returns an array of all the branch containers for all projects.
+   *
+   * @return Container[]
+   */
+  public function getAllProjectBranchContainers()
+  {
+    return $this->createQueryBuilder('c')
+      ->where('c.parentId IS NOT NULL')
+      ->orderBy('c.parentId', 'ASC')
+      ->addOrderBy('c.name', 'ASC')
+      ->getQuery()
+      ->getResult();
+  }
+
   // Network and IP address methods
 
+  /**
+   * Returns an array containing all of the unused Rainmaker (sub)network prefixes.
+   *
+   * @return string[]
+   */
   public function getAvailableNetworks()
   {
     return array_diff($this->getAllNetworks(), $this->getAllNetworksInUse());
   }
 
+  /**
+   * Returns an array containing all possible Rainmaker (sub)network prefixes.
+   *
+   * @return array
+   */
   public function getAllNetworks()
   {
     $networks = array();
     for($i = $this->defaultNetworkMin; $i <= $this->defaultNetworkMax; $i++) {
       $networks[] = $this->defaultNetworkPrefix . '.' . $i . '.0';
     }
-    sort($networks);
     return $networks;
   }
 
+  /**
+   * Returns an array containing all of the Rainmaker (sub)network prefixes that are in use.
+   *
+   * @return string[]
+   */
   public function getAllNetworksInUse()
   {
     $networks = array();
@@ -90,17 +156,36 @@ class ContainerRepository extends EntityRepository
     return $networks;
   }
 
+  /**
+   * Returns the next available Rainmaker (sub)network prefix or null if none are left.
+   *
+   * @return string|null
+   */
   public function getNextAvailableNetwork()
   {
     $availableNetworks = $this->getAvailableNetworks();
     return reset($availableNetworks);
   }
 
+  /**
+   * Returns an array of all the host IP addresses available on the Rainmaker (sub)network that is
+   * reserved for the given project container.
+   *
+   * @param Container $container
+   * @return string[]
+   */
   public function getAvailableNetworkHostAddresses(Container $container)
   {
     return array_diff($this->getAllNetworkHostAddresses($container), $this->getAllNetworkHostAddressesInUse($container));
   }
 
+  /**
+   * Returns an array of all the possible host IP address on the Rainmaker (sub)network that is
+   * reserved for the given project container.
+   *
+   * @param Container $container
+   * @return string[]
+   */
   public function getAllNetworkHostAddresses(Container $container)
   {
     $networkPrefix = $container->networkPrefix();
@@ -112,6 +197,13 @@ class ContainerRepository extends EntityRepository
     return $networkHostAddresses;
   }
 
+  /**
+   * Returns an array of all the host IP address on the Rainmaker (sub)network that is
+   * reserved for the given project container that are in use.
+   *
+   * @param Container $container
+   * @return string[]
+   */
   public function getAllNetworkHostAddressesInUse(Container $container)
   {
     $addresses = array();
@@ -122,6 +214,13 @@ class ContainerRepository extends EntityRepository
     return $addresses;
   }
 
+  /**
+   * Returns the next available host IP address on the Rainmaker (sub)network that is
+   * reserved for the given project container.
+   *
+   * @param Container $container
+   * @return string[]
+   */
   public function getNextAvailableNetworkHostAddress(Container $container)
   {
     $availableIps = $this->getAvailableNetworkHostAddresses($container);
@@ -129,6 +228,9 @@ class ContainerRepository extends EntityRepository
   }
 
   /**
+   * Returns the first usable host IP address in the range of (sub)network host IP addresses
+   * reserved for the given project container.
+   *
    * @return string
    */
   public function getNetworkHostAddrRangeMin(Container $container)
@@ -138,6 +240,9 @@ class ContainerRepository extends EntityRepository
   }
 
   /**
+   * Returns the last usable host IP address in the range of (sub)network host IP addresses
+   * reserved for the given project container.
+   *
    * @return string
    */
   public function getNetworkHostAddrRangeMax(Container $container)
@@ -148,6 +253,12 @@ class ContainerRepository extends EntityRepository
 
   // DHCP methods
 
+  /**
+   * Returns an array of containers ordered for passing to the DHCP configuration files
+   * templating system.
+   *
+   * @return Container[]
+   */
   public function getAllContainersOrderedForHostsInclude() {
     return $this->createQueryBuilder('c')
       ->orderBy('c.name', 'ASC')
@@ -158,6 +269,9 @@ class ContainerRepository extends EntityRepository
   // DNS methods
 
   /**
+   * Returns an array of primary name servers which can resolve the .localdev subdomain in use
+   * by the given container.
+   *
    * @return array
    */
   public function getPrimaryNameServers(Container $container)
@@ -170,7 +284,11 @@ class ContainerRepository extends EntityRepository
   }
 
   /**
-   * @return array
+   * Returns and array of name server host to IP mappings. Each element of the returned array is
+   * an array containing a "hostname" key mapping to the hostname of the name server, and
+   * an "ipAddress" key mapping to the IP address of the name server.
+   *
+   * @return array[]
    */
   public function getNameServerRecords(Container $container)
   {
@@ -187,7 +305,10 @@ class ContainerRepository extends EntityRepository
   }
 
   /**
-   * @return array
+   * Returns an array of DNS A records for all the hosts inside the Rainmaker (sub)network in use by
+   * the given container.
+   *
+   * @return array[]
    */
   public function getDnsRecordsForProjectContainer(Container $container)
   {
@@ -216,6 +337,9 @@ class ContainerRepository extends EntityRepository
   }
 
   /**
+   * Returns an array of DNS PTR records for all the hosts inside the Rainmaker (sub)network in use by
+   * the given container.
+   *
    * @return array
    */
   public function getDnsPtrRecordsForProjectContainer(Container $container)
@@ -242,8 +366,35 @@ class ContainerRepository extends EntityRepository
     return $records;
   }
 
+  // Fstab methods
+
+  /**
+   * Returns an array of containers requiring Rainmaker LXC cache fstab entries.
+   *
+   * @return Container[]
+   */
+  public function getAllContainersOrderedForFstabToolMounts() {
+    return $this->getProjectParentContainers();
+  }
+
+  /**
+   * Returns an array of containers requiring export via the NFS service.
+   *
+   * @return Container[]
+   */
+  public function getAllContainersOrderedForFstabNfsMounts() {
+    return $this->getAllProjectBranchContainers();
+  }
+
   // Utility methods
 
+  /**
+   * Takes a string and returns a name which can be used as a unique identifier.
+   *
+   * @param $fname
+   * @return mixed
+   * @throws RainmakerException
+   */
   public static function friendlyNameToContainerName($fname)
   {
     if (NULL === ($cname = preg_replace('/[^a-z0-9\.\-_]/', '-', substr(strtolower($fname), 0, 20)))) {
@@ -253,6 +404,13 @@ class ContainerRepository extends EntityRepository
     return $cname;
   }
 
+  /**
+   * Compares the host names of each of the supplied containers.
+   *
+   * @param Container $a
+   * @param Container $b
+   * @return int
+   */
   public static function cmpFqdnHostname(Container $a, Container $b)
   {
     $aHostname = $a->reverseHostname();
@@ -265,6 +423,14 @@ class ContainerRepository extends EntityRepository
     return $aHostname < $bHostname ? -1 : 1;
   }
 
+  /**
+   * Returns the (parent) project container for the given container. If the container is a project
+   * branch container then its project container will be returned. If the container is a project
+   * container then it will be returned.
+   *
+   * @param Container $container
+   * @return Container
+   */
   protected function getParentContainer(Container $container)
   {
     if (null !== ($id = $container->getParentId())) {

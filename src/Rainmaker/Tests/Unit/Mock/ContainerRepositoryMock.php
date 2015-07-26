@@ -26,15 +26,20 @@ class ContainerRepositoryMock extends ContainerRepository
 
   public function getProjectContainers()
   {
-    return array();
+    return $this->getAllParentContainers();
   }
 
   public function getProjectParentContainers()
   {
-    return array();
+    return $this->getAllParentContainers();
   }
 
   public function getProjectBranchContainers(Container $container)
+  {
+    return array();
+  }
+
+  public function getAllProjectBranchContainers()
   {
     return array();
   }

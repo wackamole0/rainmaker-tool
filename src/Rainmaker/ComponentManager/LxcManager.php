@@ -14,6 +14,8 @@ use Rainmaker\Util\Template;
  */
 class LxcManager extends ComponentManager {
 
+  const DEFAULT_LXC_BUILD_TIMEOUT = 300;
+
   /**
    * Create an new Linux container for the given abstract container
    *
@@ -25,6 +27,7 @@ class LxcManager extends ComponentManager {
 
     try {
       $process = new Process('lxc-create --name ' . escapeshellarg($this->getContainer()->getName()) . ' --bdev btrfs --template rainmaker-project');
+      $process->setTimeout(static::DEFAULT_LXC_BUILD_TIMEOUT);
       $this->getProcessRunner()->run($process);
     } catch (ProcessFailedException $e) {
       echo $e->getMessage();
@@ -46,6 +49,35 @@ class LxcManager extends ComponentManager {
     $this->getEntityManager()->getRepository('Rainmaker:Container')->saveContainer($this->getContainer());
 
     $this->writeLxcConfigurationFile();
+  }
+
+  /**
+   * Starts a Linux container
+   *
+   * @param Container $container
+   */
+  public function startContainer(Container $container)
+  {
+    $this->container = $container;
+
+    try {
+      $process = new Process('lxc-info -s -n ' . $container->getName());
+      $this->getProcessRunner()->run($process);
+      if (stristr($process->getOutput(), 'stopped') === FALSE) {
+        return;
+      }
+    } catch (ProcessFailedException $e) {
+      echo $e->getMessage();
+    }
+
+    try {
+      $process = new Process('lxc-start -d -n ' . $container->getName());
+      $this->getProcessRunner()->run($process);
+      $container->setState(Container::STATE_RUNNING);
+      $this->getEntityManager()->getRepository('Rainmaker:Container')->saveContainer($container);
+    } catch (ProcessFailedException $e) {
+      echo $e->getMessage();
+    }
   }
 
   /**
