@@ -8,14 +8,14 @@ use Rainmaker\Entity\Container;
 use Rainmaker\Util\Template;
 
 /**
- * A class for managing the Linux fstab in a Rainmaker environment
+ * A class for managing the Linux fstab in a Rainmaker environment.
  *
  * @package Rainmaker\ComponentManager
  */
 class FstabManager extends ComponentManager {
 
   /**
-   * Updates the Linux fstab file with the the entries relevant to the given container
+   * Updates the Linux fstab file with the entries relevant to the given project container.
    *
    * @param Container $container
    */
@@ -29,7 +29,31 @@ class FstabManager extends ComponentManager {
   }
 
   /**
-   * Writes the Linux fstab file to disk
+   * Updates the Linux fstab file with the entries relevant to the given project branch container.
+   *
+   * @param Container $container
+   */
+  public function createProjectBranchFstabEntries(Container $container, $mountFstabEntries = false)
+  {
+    $this->container = $container;
+    $this->checkAndCreateProjectBranchMountPoints();
+    $this->writeFstab();
+    if ($mountFstabEntries) {
+      $this->mountProjectFstabEntries();
+    }
+  }
+
+  public function checkAndCreateProjectBranchMountPoints()
+  {
+    foreach($this->getFstabNfsMounts() as $mount) {
+      if (!$this->getFilesystem()->exists($mount['target'])) {
+        $this->getFilesystem()->mkdir($mount['target']);
+      }
+    }
+  }
+
+  /**
+   * Writes the Linux fstab file to disk.
    */
   protected function writeFstab()
   {
@@ -42,7 +66,7 @@ class FstabManager extends ComponentManager {
   }
 
   /**
-   * Mounts the fstab entries for the container that is currently being managed
+   * Mounts the fstab entries for the container that is currently being managed.
    */
   protected function mountProjectFstabEntries()
   {
@@ -58,31 +82,23 @@ class FstabManager extends ComponentManager {
   }
 
   /**
-   * Returns an array of all the mount points which mount the Rainmaker LXC cache
+   * Returns an array of all the mount points which mount the Rainmaker LXC cache.
    *
    * @return array
    */
   protected function getFstabToolMounts()
   {
-    $mounts = array();
-    foreach ($this->getEntityManager()->getRepository('Rainmaker:Container')->getAllContainersOrderedForFstabToolMounts() as $container) {
-      $mounts[] = $container->getFstabToolsMountPoint();
-    }
-    return $mounts;
+    return $this->getEntityManager()->getRepository('Rainmaker:Container')->getAllFstabToolsMountPoint();
   }
 
   /**
-   * Returns an array of all the mount points for the NFS exports
+   * Returns an array of all the mount points for the NFS exports.
    *
    * @return array
    */
   protected function getFstabNfsMounts()
   {
-    $mounts = array();
-    foreach ($this->getEntityManager()->getRepository('Rainmaker:Container')->getAllContainersOrderedForFstabNfsMounts() as $container) {
-      $mounts[] = $container->getFstabNfsMountPoint();
-    }
-    return $mounts;
+    return $this->getEntityManager()->getRepository('Rainmaker:Container')->getAllFstabNfsMountPoint();
   }
 
 }

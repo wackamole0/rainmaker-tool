@@ -6,17 +6,17 @@ use Rainmaker\Task\Task;
 use Rainmaker\ComponentManager\DhcpManager;
 
 /**
- * Configure the DHCP settings for the container.
+ * Configure the DHCP settings for the project branch container.
  *
  * @package Rainmaker\Task\Subtask
  */
-class AddProjectDhcpSettings extends Task
+class AddProjectBranchDhcpSettings extends Task
 {
 
   public function performTask()
   {
     $dhcp = new DhcpManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
-    $dhcp->createProjectDhcpSettings($this->getContainer(), true);
+    $dhcp->createProjectBranchDhcpSettings($this->getContainer(), true);
   }
 
 }

@@ -53,7 +53,7 @@ class FilesystemMock extends Filesystem
 
     $pathsTranslated = array();
     foreach ($paths as $path) {
-      $pathsTranslated = $this->pathToUrl($path);
+      $pathsTranslated[] = $this->pathToUrl($path);
     }
 
     return new \ArrayObject($pathsTranslated);

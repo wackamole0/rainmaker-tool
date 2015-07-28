@@ -5,7 +5,7 @@ namespace Rainmaker\Process;
 use Symfony\Component\Process\Process;
 
 /**
- * A wrapper class for executing processes
+ * A wrapper class for executing processes.
  *
  * @package Rainmaker\Process
  * @return void

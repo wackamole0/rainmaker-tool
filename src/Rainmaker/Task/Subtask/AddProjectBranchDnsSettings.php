@@ -6,17 +6,17 @@ use Rainmaker\Task\Task;
 use Rainmaker\ComponentManager\BindManager;
 
 /**
- * Configure the DNS settings for the container.
+ * Configure the DNS settings for the project branch container.
  *
  * @package Rainmaker\Task\Subtask
  */
-class AddProjectDnsSettings extends Task
+class AddProjectBranchDnsSettings extends Task
 {
 
   public function performTask()
   {
     $dns = new BindManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
-    $dns->configureDnsZoneForProjectContainer($this->getContainer(), true);
+    $dns->configureDnsZoneForProjectBranchContainer($this->getContainer(), true);
   }
 
 }

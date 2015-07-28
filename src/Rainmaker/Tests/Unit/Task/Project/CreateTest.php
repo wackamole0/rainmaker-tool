@@ -29,7 +29,7 @@ class CreateTest extends AbstractUnitTest
     $task = new Create();
     $task->setContainer($project);
 
-    $entityManagerMock = $this->createEntityManagerMock(array($project));
+    $entityManagerMock = $this->createEntityManagerMock(array($project), array(), $project);
     $task->setEntityManager($entityManagerMock);
 
     $processRunnerMock = $this->createProcessRunnerMock();
@@ -74,7 +74,64 @@ class CreateTest extends AbstractUnitTest
    */
   public function testCreateProjectAndBranch()
   {
-    ;
+    $pathToTestAcceptanceFiles = $this->getPathToTestAcceptanceFilesDirectory() . '/createProjectAndBranch';
+
+    $project = $this->createDummyProject();
+    $branch = $this->createDummyProjectBranch();
+
+    $task = new Create();
+    $task->setContainer($project);
+    $task->setBranchContainer($branch);
+
+    $entityManagerMock = $this->createEntityManagerMock(array($project), array($branch), $project);
+    $task->setEntityManager($entityManagerMock);
+
+    $processRunnerMock = $this->createProcessRunnerMock();
+    $task->setProcessRunner($processRunnerMock);
+
+    $filesystemMock = $this->createFilesystemMock();
+    $task->setFilesystem($filesystemMock);
+
+    $logger = $this->createLogger();
+    $task->setLogger($logger);
+
+    $task->performTask();
+
+    // Check container configuration
+
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/lxc/project_lxc_config'), $filesystemMock->getFileContents('/var/lib/lxc/' . $project->getName() . '/config'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/lxc/project_hostname'), $filesystemMock->getFileContents('/var/lib/lxc/' . $task->getContainer()->getName() . '/rootfs/etc/hostname'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/lxc/project_hosts'), $filesystemMock->getFileContents('/var/lib/lxc/' . $task->getContainer()->getName() . '/rootfs/etc/hosts'));
+
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/lxc/branch_lxc_config'), $filesystemMock->getFileContents('/var/lib/lxc/' . $project->getName() . '/rootfs/var/lib/lxc/' . $branch->getName() . '/config'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/lxc/branch_hostname'), $filesystemMock->getFileContents('/var/lib/lxc/' . $project->getName() . '/rootfs/var/lib/lxc/' . $branch->getName() . '/rootfs/etc/hostname'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/lxc/branch_hosts'), $filesystemMock->getFileContents('/var/lib/lxc/' . $project->getName() . '/rootfs/var/lib/lxc/' . $branch->getName() . '/rootfs/etc/hosts'));
+
+
+    // Check DHCP configuration
+
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/dhcp/host_localdev.test.cluster.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.host.conf.d/localdev.test.cluster.conf'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/dhcp/host_localdev.test.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.host.conf.d/localdev.test.conf'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/dhcp/dhcpd.host.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.host.conf'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/dhcp/class_localdev.test.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.class.conf.d/localdev.test.conf'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/dhcp/dhcpd.class.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.class.conf'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/dhcp/subnet_10.100.0.0.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.subnet.conf.d/10.100.0.0.conf'));
+
+    // Check DNS configuration
+
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/bind/db.test.localdev'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/db.rainmaker/db.test.localdev'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/bind/db.10.100.1'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/db.rainmaker/db.10.100.1'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/bind/named.test.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/named.conf.rainmaker/test.conf'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/bind/named.conf.local'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/named.conf.local'));
+
+    // Check Fstab configuration
+
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/fstab'), $filesystemMock->getFileContents('/etc/fstab'));
+    $this->assertTrue($filesystemMock->exists('/export/rainmaker/test.prod'));
+
+    // Check NFS configuration
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/exports'), $filesystemMock->getFileContents('/etc/exports'));
+
   }
 
 
@@ -98,12 +155,28 @@ class CreateTest extends AbstractUnitTest
     return $container;
   }
 
-  protected function createEntityManagerMock(array $containers)
+  protected function createDummyProjectBranch()
+  {
+    $container = new Container();
+    $container
+      ->setName('test.prod')
+      ->setFriendlyName('Test [Prod]')
+      ->setHostname('test.localdev')
+      ->setDomain('test.localdev')
+      ->setDnsZoneSerial('2015070501')
+      ->setParentId(1);
+    return $container;
+  }
+
+  protected function createEntityManagerMock(array $projects = array(), array $branches = array(), Container $parent = null)
   {
     $em = new EntityManagerMock();
     $repository = $em->getRepository('Rainmaker:Container');
-    $repository->allParentContainers = $containers;
-    $repository->allContainersOrderedForHostsInclude = $containers;
+    $repository->projectContainers = $projects;
+    $repository->branchContainers = $branches;
+    $repository->allBranchContainers = $branches;
+    $repository->allContainersOrderedForHostsInclude = array_merge($projects, $branches);
+    $repository->parentContainer = $parent;
     return $em;
   }
 

@@ -5,7 +5,7 @@ namespace Rainmaker\Logger\Handler;
 use Monolog\Handler\AbstractProcessingHandler;
 
 /**
- * Buffers log records to a string
+ * Buffers log records to a string.
  */
 class StringBufferHandler extends AbstractProcessingHandler
 {

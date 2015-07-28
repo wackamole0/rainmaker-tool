@@ -193,7 +193,6 @@ class ContainerRepository extends EntityRepository
     for($i = $this->defaultNetworkHostAddressMin; $i <= $this->defaultNetworkHostAddressMax; $i++) {
       $networkHostAddresses[] = $networkPrefix . '.' . $i;
     }
-    sort($networkHostAddresses);
     return $networkHostAddresses;
   }
 
@@ -206,7 +205,8 @@ class ContainerRepository extends EntityRepository
    */
   public function getAllNetworkHostAddressesInUse(Container $container)
   {
-    $addresses = array();
+    $project = $this->getParentContainer($container);
+    $addresses = array($project->getIPAddress());
     foreach ($this->getProjectBranchContainers($container) as $projectBranchContainer) {
       $addresses[] = $projectBranchContainer->getIPAddress();
     }
@@ -325,7 +325,7 @@ class ContainerRepository extends EntityRepository
     foreach ($branches as $branch) {
       $hostname = $branch->shortHostname();
       if ($branch->getHostname() == $project->getDomain()) {
-        $hostname = '@';
+        $hostname = $branch->getHostname() . '.';
       }
       $records[] = array(
         'hostname'  => $hostname,
@@ -373,7 +373,8 @@ class ContainerRepository extends EntityRepository
    *
    * @return Container[]
    */
-  public function getAllContainersOrderedForFstabToolMounts() {
+  public function getAllContainersOrderedForFstabToolMounts()
+  {
     return $this->getProjectParentContainers();
   }
 
@@ -382,8 +383,76 @@ class ContainerRepository extends EntityRepository
    *
    * @return Container[]
    */
-  public function getAllContainersOrderedForFstabNfsMounts() {
+  public function getAllContainersOrderedForFstabNfsMounts()
+  {
     return $this->getAllProjectBranchContainers();
+  }
+
+  /**
+   * Returns an array of all the mount points which mount the Rainmaker LXC cache.
+   *
+   * @return array
+   */
+  public function getAllFstabToolsMountPoint()
+  {
+    $mounts = array();
+    foreach ($this->getAllContainersOrderedForFstabToolMounts() as $container) {
+      $mounts[] = $this->getFstabToolsMountPointForContainer($container);
+    }
+    return $mounts;
+  }
+
+  /**
+   * Returns an array of all the mount points for the NFS exports.
+   *
+   * @return array
+   */
+  public function getAllFstabNfsMountPoint()
+  {
+    $mounts = array();
+    foreach ($this->getAllContainersOrderedForFstabNfsMounts() as $container) {
+      $mounts[] = $this->getFstabNfsMountPointForContainer($container);
+    }
+    return $mounts;
+  }
+
+  /**
+   * Returns an array mapping the source and target filesystem locations for the given container's
+   * Rainmaker LXC cache.
+   *
+   * @param Container $container
+   * @return array|null
+   */
+  public function getFstabToolsMountPointForContainer(Container $container)
+  {
+    if ($container->isProjectBranch()) {
+      return null;
+    }
+
+    return array(
+      'source' => '/var/cache/lxc/rainmaker',
+      'target' => $container->getLxcRootFs() . '/var/cache/lxc/rainmaker'
+    );
+  }
+
+  /**
+   * Returns an array mapping the source and target filesystem locations for the given container's
+   * NFS export.
+   *
+   * @param Container $container
+   * @return array|null
+   */
+  public function getFstabNfsMountPointForContainer(Container $container)
+  {
+    if ($container->isProject()) {
+      return null;
+    }
+
+    $project = $this->getParentContainer($container);
+    return array(
+      'source' => $project->getLxcRootFs() . '/var/lib/lxc/' .  $container->getName() . '/rootfs/var/www/html',
+      'target' => '/export/rainmaker/' . $container->getName()
+    );
   }
 
   // Utility methods
@@ -431,7 +500,7 @@ class ContainerRepository extends EntityRepository
    * @param Container $container
    * @return Container
    */
-  protected function getParentContainer(Container $container)
+  public function getParentContainer(Container $container)
   {
     if (null !== ($id = $container->getParentId())) {
       return $this->findOneById($id);

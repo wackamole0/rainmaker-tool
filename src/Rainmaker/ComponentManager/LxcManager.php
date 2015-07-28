@@ -8,7 +8,7 @@ use Rainmaker\Entity\Container;
 use Rainmaker\Util\Template;
 
 /**
- * A class for managing the Linux Containers (LXC) in a Rainmaker environment
+ * A class for managing the Linux Containers (LXC) in a Rainmaker environment.
  *
  * @package Rainmaker\ComponentManager
  */
@@ -17,11 +17,11 @@ class LxcManager extends ComponentManager {
   const DEFAULT_LXC_BUILD_TIMEOUT = 300;
 
   /**
-   * Create an new Linux container for the given abstract container
+   * Create an new Linux container for the given Rainmaker project container.
    *
    * @param \Rainmaker\Entity\Container $container
    */
-  public function createContainer(Container $container)
+  public function createProjectContainer(Container $container)
   {
     $this->container = $container;
 
@@ -35,11 +35,29 @@ class LxcManager extends ComponentManager {
   }
 
   /**
-   * Creates the configuration file for the Linux container
+   * Create an new Linux container for the given Rainmaker project branch container.
    *
    * @param Container $container
    */
-  public function configureContainer(Container $container)
+  public function createProjectBranchContainer(Container $container) {
+    $this->container = $container;
+    $project = $this->getEntityManager()->getRepository('Rainmaker:Container')->getParentContainer($container);
+
+    try {
+      $process = new Process('lxc-attach -n ' . $project->getName() . ' -- lxc-create --name ' . escapeshellarg($this->getContainer()->getName()) . ' --bdev btrfs --template rainmaker-project-branch');
+      $process->setTimeout(static::DEFAULT_LXC_BUILD_TIMEOUT);
+      $this->getProcessRunner()->run($process);
+    } catch (ProcessFailedException $e) {
+      echo $e->getMessage();
+    }
+  }
+
+  /**
+   * Creates the configuration file for the Rainmaker project Linux container.
+   *
+   * @param Container $container
+   */
+  public function configureProjectContainer(Container $container)
   {
     $this->container = $container;
 
@@ -48,18 +66,48 @@ class LxcManager extends ComponentManager {
     $this->getContainer()->setLxcRootFs($this->getLxcConfigurationSettingValue('lxc.rootfs'));
     $this->getEntityManager()->getRepository('Rainmaker:Container')->saveContainer($this->getContainer());
 
-    $this->writeLxcConfigurationFile();
+    $this->writeProjectLxcConfigurationFile();
   }
 
   /**
-   * Starts a Linux container
+   * Creates the configuration file for the Rainmaker project branch Linux container.
    *
    * @param Container $container
    */
-  public function startContainer(Container $container)
+  public function configureProjectBranchContainer(Container $container)
   {
     $this->container = $container;
 
+    $this->getContainer()->setLxcUtsName($this->getLxcConfigurationSettingValue('lxc.utsname'));
+    $this->getContainer()->setLxcHwAddr($this->getLxcConfigurationSettingValue('lxc.network.hwaddr'));
+    $this->getContainer()->setLxcRootFs($this->getLxcConfigurationSettingValue('lxc.rootfs'));
+    $this->getEntityManager()->getRepository('Rainmaker:Container')->saveContainer($this->getContainer());
+
+    $this->writeProjectBranchLxcConfigurationFile();
+  }
+
+  /**
+   * Starts a Linux container.
+   *
+   * @param Container $container
+   */
+  public function startContainer(Container $container) {
+    $this->container = $container;
+
+    if ($container->isProjectBranch()) {
+      $this->startProjectBranchContainer($container);
+    }
+
+    $this->startProjectContainer($container);
+  }
+
+  /**
+   * Starts a Rainmaker project Linux container.
+   *
+   * @param Container $container
+   */
+  public function startProjectContainer(Container $container)
+  {
     try {
       $process = new Process('lxc-info -s -n ' . $container->getName());
       $this->getProcessRunner()->run($process);
@@ -81,7 +129,38 @@ class LxcManager extends ComponentManager {
   }
 
   /**
-   * Extracts the value of setting from a Linux container configuration file
+   * Starts a Rainmaker project branch Linux container.
+   *
+   * @param Container $container
+   */
+  public function startProjectBranchContainer(Container $container)
+  {
+    $project = $this->getEntityManager()->getRepository('Rainmaker:Container')->getParentContainer($this->getContainer());
+
+    try {
+      $this->startProjectContainer($project);
+
+      $process = new Process('lxc-info -s -n ' . $container->getName());
+      $this->getProcessRunner()->run($process);
+      if (stristr($process->getOutput(), 'stopped') === FALSE) {
+        return;
+      }
+    } catch (ProcessFailedException $e) {
+      echo $e->getMessage();
+    }
+
+    try {
+      $process = new Process('lxc-attach -n ' . $project->getName() . ' -- lxc-start -d -n ' . $container->getName());
+      $this->getProcessRunner()->run($process);
+      $container->setState(Container::STATE_RUNNING);
+      $this->getEntityManager()->getRepository('Rainmaker:Container')->saveContainer($container);
+    } catch (ProcessFailedException $e) {
+      echo $e->getMessage();
+    }
+  }
+
+  /**
+   * Extracts the value of setting from a Linux container configuration file.
    *
    * @param $setting
    * @return null
@@ -89,6 +168,10 @@ class LxcManager extends ComponentManager {
   protected function getLxcConfigurationSettingValue($setting)
   {
     $file = '/var/lib/lxc/' . $this->getContainer()->getName() . '/config';
+    if ($this->getContainer()->isProjectBranch()) {
+      $project = $this->getEntityManager()->getRepository('Rainmaker:Container')->getParentContainer($this->getContainer());
+      $file = '/var/lib/lxc/' . $project->getName() . '/rootfs/var/lib/lxc/' . $this->getContainer()->getName() . '/config';
+    }
     $contents = $this->getFilesystem()->getFileContents($file);
     $matches = array();
     if (preg_match('/\s*' . $setting . '\s*=\s*(.+)\s*/', $contents, $matches) !== 1) {
@@ -99,9 +182,9 @@ class LxcManager extends ComponentManager {
   }
 
   /**
-   * Writes the configuration file for the Linux container to the filesystem
+   * Writes the configuration file for the Rainmaker project Linux container to the filesystem.
    */
-  protected function writeLxcConfigurationFile()
+  protected function writeProjectLxcConfigurationFile()
   {
     $config = Template::render('lxc/project-config.twig', array(
       'lxc_root_fs'       => $this->getContainer()->getLxcRootFs(),
@@ -110,6 +193,23 @@ class LxcManager extends ComponentManager {
     ));
 
     $file = '/var/lib/lxc/' . $this->getContainer()->getName() . '/config';
+    $this->getFilesystem()->putFileContents($file, $config);
+  }
+
+  /**
+   * Writes the configuration file for the Rainmaker project branch Linux container to the filesystem.
+   */
+  protected function writeProjectBranchLxcConfigurationFile()
+  {
+    $config = Template::render('lxc/project-branch-config.twig', array(
+      'lxc_root_fs'       => $this->getContainer()->getLxcRootFs(),
+      'lxc_utsname'       => $this->getContainer()->getLxcUtsName(),
+      'lxc_net_hwaddr'    => $this->getContainer()->getLxcHwAddr(),
+    ));
+
+    $project = $this->getEntityManager()->getRepository('Rainmaker:Container')->getParentContainer($this->getContainer());
+
+    $file = '/var/lib/lxc/' . $project->getName() . '/rootfs/var/lib/lxc/' . $this->getContainer()->getName() . '/config';
     $this->getFilesystem()->putFileContents($file, $config);
   }
 

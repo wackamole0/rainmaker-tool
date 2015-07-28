@@ -6,11 +6,11 @@ use Rainmaker\Task\Task;
 use Rainmaker\ComponentManager\LxcManager;
 
 /**
- * Creates a Linux container for a Rainmaker project
+ * Creates a Linux container for a Rainmaker project branch.
  *
  * @package Rainmaker\Task\Subtask
  */
-class CreateLinuxContainer extends Task
+class CreateProjectBranchLinuxContainer extends Task
 {
 
   public function performTask()
@@ -18,7 +18,7 @@ class CreateLinuxContainer extends Task
     $this->log(\Monolog\Logger::DEBUG, 'Constructing container');
 
     $lxc = new LxcManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
-    $lxc->createContainer($this->getContainer());
+    $lxc->createProjectBranchContainer($this->getContainer());
   }
 
 }

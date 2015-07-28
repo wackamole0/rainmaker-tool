@@ -6,7 +6,7 @@ use Rainmaker\RainmakerException;
 use Monolog\Logger;
 
 /**
- * A class for representing a the unit of work required to perform some task by breaking the task up into subtasks
+ * A class for representing a the unit of work required to perform some task by breaking the task up into subtasks.
  *
  * @package Rainmaker\Task
  */
@@ -59,12 +59,8 @@ abstract class TaskWithSubtasks extends Task
 
     try {
       for ($i = 0; $i < $subtaskCount; $i++) {
-        $subtasks[$i]
-          ->setContainer($this->container)
-          ->setEntityManager($this->entityManager)
-          ->setProcessRunner($this->processRunner)
-          ->setFilesystem($this->filesystem)
-          ->setLogger($this->logger)
+        $this
+          ->prepareSubtask($subtasks[$i])
           ->performTask();
       }
     }
@@ -79,7 +75,23 @@ abstract class TaskWithSubtasks extends Task
   }
 
   /**
-   * Send the the header message for this subtask to the logger
+   * Returns a subtask with all relevant dependencies set.
+   *
+   * @param Task $task
+   * @return Task
+   */
+  protected function prepareSubtask(Task $task)
+  {
+    return $task
+      ->setContainer($this->container)
+      ->setEntityManager($this->entityManager)
+      ->setProcessRunner($this->processRunner)
+      ->setFilesystem($this->filesystem)
+      ->setLogger($this->logger);
+  }
+
+  /**
+   * Send the the header message for this subtask to the logger.
    */
   protected function sendLogHeader()
   {
@@ -90,7 +102,7 @@ abstract class TaskWithSubtasks extends Task
   }
 
   /**
-   * Returns the log header message for this subtask
+   * Returns the log header message for this subtask.
    *
    * @return string|null
    */

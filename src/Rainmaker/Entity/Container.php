@@ -137,7 +137,7 @@ class Container
   protected $state = 0;
 
   /**
-   * Get id
+   * Get id.
    *
    * @return integer
    */
@@ -147,7 +147,7 @@ class Container
   }
 
   /**
-   * Set parentId
+   * Set parentId.
    *
    * @param integer $parentId
    * @return Container
@@ -160,7 +160,7 @@ class Container
   }
 
   /**
-   * Get parentId
+   * Get parentId.
    *
    * @return integer
    */
@@ -170,7 +170,7 @@ class Container
   }
 
   /**
-   * Set name
+   * Set name.
    *
    * @param string $name
    * @return Container
@@ -183,7 +183,7 @@ class Container
   }
 
   /**
-   * Get name
+   * Get name.
    *
    * @return string
    */
@@ -193,7 +193,7 @@ class Container
   }
 
   /**
-   * Set friendlyName
+   * Set friendlyName.
    *
    * @param string $friendlyName
    * @return Container
@@ -206,7 +206,7 @@ class Container
   }
 
   /**
-   * Get friendlyName
+   * Get friendlyName.
    *
    * @return string
    */
@@ -216,7 +216,7 @@ class Container
   }
 
   /**
-   * Get LXC UTS name
+   * Get LXC UTS name.
    *
    * @return string
    */
@@ -226,7 +226,7 @@ class Container
   }
 
   /**
-   * Set LXC UTS name
+   * Set LXC UTS name.
    *
    * @param string $lxcUtsName
    * @return Container
@@ -239,7 +239,7 @@ class Container
   }
 
   /**
-   * Get LXC Hardware Addr
+   * Get LXC Hardware Addr.
    *
    * @return string
    */
@@ -249,7 +249,7 @@ class Container
   }
 
   /**
-   * Set LXC Hardware Addr
+   * Set LXC Hardware Addr.
    *
    * @param string $lxcHwAddr
    * @return Container
@@ -262,7 +262,7 @@ class Container
   }
 
   /**
-   * Get LXC Root FS
+   * Get LXC Root FS.
    *
    * @return string
    */
@@ -272,7 +272,7 @@ class Container
   }
 
   /**
-   * Set LXC Root FS
+   * Set LXC Root FS.
    *
    * @param string $lxcRootFs
    * @return Container
@@ -285,7 +285,7 @@ class Container
   }
 
   /**
-   * Get Hostname
+   * Get Hostname.
    *
    * @return string
    */
@@ -295,7 +295,7 @@ class Container
   }
 
   /**
-   * Set Hostname
+   * Set Hostname.
    *
    * @param string $hostname
    * @return Container
@@ -308,7 +308,7 @@ class Container
   }
 
   /**
-   * Get Domain Name
+   * Get Domain Name.
    *
    * @return string
    */
@@ -318,7 +318,7 @@ class Container
   }
 
   /**
-   * Set Domain Name
+   * Set Domain Name.
    *
    * @param string $domain
    * @return Container
@@ -331,7 +331,7 @@ class Container
   }
 
   /**
-   * Get Network Address
+   * Get Network Address.
    *
    * @return string
    */
@@ -341,7 +341,7 @@ class Container
   }
 
   /**
-   * Set Network Address
+   * Set Network Address.
    *
    * @param string $networkAddress
    * @return Container
@@ -354,7 +354,7 @@ class Container
   }
 
   /**
-   * Get IP Address
+   * Get IP Address.
    *
    * @return string
    */
@@ -364,7 +364,7 @@ class Container
   }
 
   /**
-   * Set IP Address
+   * Set IP Address.
    *
    * @param string $ipAddress
    * @return Container
@@ -377,7 +377,7 @@ class Container
   }
 
   /**
-   * Get DNS Zone TTL
+   * Get DNS Zone TTL.
    *
    * @return string
    */
@@ -387,7 +387,7 @@ class Container
   }
 
   /**
-   * Set DNS Zone TTL
+   * Set DNS Zone TTL.
    *
    * @param string $dnsZoneTtl
    * @return Container
@@ -400,7 +400,7 @@ class Container
   }
 
   /**
-   * Get DNS zone primary master name server
+   * Get DNS zone primary master name server.
    *
    * @return string
    */
@@ -410,7 +410,7 @@ class Container
   }
 
   /**
-   * Set DNS zone primary master name server
+   * Set DNS zone primary master name server.
    *
    * @param string $dnsZonePriMasterNs
    * @return Container
@@ -423,7 +423,7 @@ class Container
   }
 
   /**
-   * Get DNS zone administrator email address
+   * Get DNS zone administrator email address.
    *
    * @return string
    */
@@ -433,7 +433,7 @@ class Container
   }
 
   /**
-   * Set DNS zone administrator email address
+   * Set DNS zone administrator email address.
    *
    * @param string $dnsZoneAdminEmail
    * @return Container
@@ -446,7 +446,7 @@ class Container
   }
 
   /**
-   * Get DNS zone serial
+   * Get DNS zone serial.
    *
    * @return string
    */
@@ -456,7 +456,7 @@ class Container
   }
 
   /**
-   * Set DNS zone serial
+   * Set DNS zone serial.
    *
    * @param string $dnsZoneSerial
    * @return Container
@@ -469,7 +469,7 @@ class Container
   }
 
   /**
-   * Get DNS zone refresh
+   * Get DNS zone refresh.
    *
    * @return string
    */
@@ -479,7 +479,7 @@ class Container
   }
 
   /**
-   * Set DNS zone refresh
+   * Set DNS zone refresh.
    *
    * @param string $dnsZoneRefresh
    * @return Container
@@ -492,7 +492,7 @@ class Container
   }
 
   /**
-   * Get DNS zone retry
+   * Get DNS zone retry.
    *
    * @return string
    */
@@ -502,7 +502,7 @@ class Container
   }
 
   /**
-   * Set DNS zone retry
+   * Set DNS zone retry.
    *
    * @param string $dnsZoneRetry
    * @return Container
@@ -515,7 +515,7 @@ class Container
   }
 
   /**
-   * Get DNS zone expire
+   * Get DNS zone expire.
    *
    * @return string
    */
@@ -525,7 +525,7 @@ class Container
   }
 
   /**
-   * Set DNS zone expire
+   * Set DNS zone expire.
    *
    * @param string $dnsZoneExpire
    * @return Container
@@ -538,7 +538,7 @@ class Container
   }
 
   /**
-   * Get DNS zone negative cache TTL
+   * Get DNS zone negative cache TTL.
    *
    * @return string
    */
@@ -548,7 +548,7 @@ class Container
   }
 
   /**
-   * Set DNS zone negative cache TTL
+   * Set DNS zone negative cache TTL.
    *
    * @param string $dnsZoneNegCacheTtl
    * @return Container
@@ -561,7 +561,7 @@ class Container
   }
 
   /**
-   * Get the current numerical status of the container
+   * Get the current numerical status of the container.
    *
    * @return int
    */
@@ -571,7 +571,7 @@ class Container
   }
 
   /**
-   * Set the current numerical status of this container
+   * Set the current numerical status of this container.
    *
    * @param int $state
    * @return $this
@@ -580,6 +580,32 @@ class Container
   {
     $this->state = $state;
     return $this;
+  }
+
+
+  // Utility methods
+
+
+  /**
+   * Returns a true if the container is a Rainmaker project container and false if a Rainmaker project branch
+   * container.
+   *
+   * @return bool
+   */
+  public function isProject()
+  {
+    return NULL === $this->parentId;
+  }
+
+  /**
+   * Returns a true if the container is a Rainmaker project branch container and false if a Rainmaker project
+   * container.
+   *
+   * @return bool
+   */
+  public function isProjectBranch()
+  {
+    return NULL !== $this->parentId;
   }
 
   /**

@@ -11,8 +11,11 @@ use Rainmaker\Entity\Container;
 class ContainerRepositoryMock extends ContainerRepository
 {
 
-  public $allParentContainers = array();
+  public $projectContainers = array();
+  public $branchContainers = array();
+  public $allBranchContainers = array();
   public $allContainersOrderedForHostsInclude = array();
+  public $parentContainer = null;
 
   public function __construct()
   {
@@ -24,54 +27,41 @@ class ContainerRepositoryMock extends ContainerRepository
     return null;
   }
 
+  public function getAllParentContainers() {
+    return $this->getProjectContainers();
+  }
+
   public function getProjectContainers()
   {
-    return $this->getAllParentContainers();
+    return $this->projectContainers;
   }
 
   public function getProjectParentContainers()
   {
-    return $this->getAllParentContainers();
+    return $this->getProjectContainers();
   }
 
   public function getProjectBranchContainers(Container $container)
   {
-    return array();
+    return $this->branchContainers;
   }
 
   public function getAllProjectBranchContainers()
   {
-    return array();
+    return $this->allBranchContainers;
   }
 
   public function getAllContainersOrderedForHostsInclude() {
     return $this->allContainersOrderedForHostsInclude;
   }
 
-  public function getAllParentContainers() {
-    return $this->allParentContainers;
-  }
-
-  // DNS methods
-
-  public function getDnsRecordsForProjectContainer(Container $container)
+  public function getParentContainer(Container $container)
   {
-    return array(
-      array(
-        'hostname'  => 'cluster',
-        'ipAddress' => '10.100.1.1',
-      )
-    );
-  }
+    if (null !== $container->getParentId()) {
+      return $this->parentContainer;
+    }
 
-  public function getDnsPtrRecordsForProjectContainer(Container $container)
-  {
-    return array(
-      array(
-        'hostname'  => 'cluster.test.localdev.',
-        'ipAddress' => '1',
-      )
-    );
+    return $container;
   }
 
 }

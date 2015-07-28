@@ -3,7 +3,7 @@
 namespace Rainmaker\ComponentManager;
 
 /**
- * Abstract base class used by all classes that manager a component of the Rainmaker ecosystem
+ * Abstract base class used by all classes that manager a component of the Rainmaker ecosystem.
  *
  * @package Rainmaker\ComponentManager
  */

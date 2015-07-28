@@ -8,21 +8,22 @@ use Rainmaker\Entity\Container;
 use Rainmaker\Util\Template;
 
 /**
- * A class for managing the ISC DHCP Server service in a Rainmaker environment
+ * A class for managing the ISC DHCP Server service in a Rainmaker environment.
  *
  * @package Rainmaker\ComponentManager
  */
 class DhcpManager extends ComponentManager {
 
   /**
-   * Creates the DHCPD configuration files for a project container
+   * Creates the DHCPD configuration files for a project container.
    *
    * @param Container $container
    */
   public function createProjectDhcpSettings(Container $container, $reloadDhcpService = false)
   {
     $this->container = $container;
-    $this->writeDhcpHostFile();
+    $this->setProjectContainerDnsDefaults();
+    $this->writeProjectDhcpHostFile();
     $this->writeDhcpHostIncludeFile();
     $this->writeDhcpClassFile();
     $this->writeDhcpClassIncludeFile();
@@ -33,9 +34,57 @@ class DhcpManager extends ComponentManager {
   }
 
   /**
-   * Writes the DHCPD configuration file specific to the Linux container to the filesystem
+   * Creates the DHCPD configuration files for a project branch container.
+   *
+   * @param Container $container
    */
-  protected function writeDhcpHostFile()
+  public function createProjectBranchDhcpSettings(Container $container, $reloadDhcpService = false)
+  {
+    $this->container = $container;
+    $this->setProjectBranchContainerDnsDefaults();
+    $this->writeProjectBranchDhcpHostFile();
+    $this->writeDhcpHostIncludeFile();
+    if ($reloadDhcpService) {
+      $this->reloadDhcpService();
+    }
+  }
+
+  /**
+   * Configures the default DHCP settings for a project container instance.
+   */
+  protected function setProjectContainerDnsDefaults()
+  {
+    if (empty($this->getContainer()->getNetworkAddress())) {
+      $this->getContainer()->setNetworkAddress(
+        $this->getEntityManager()->getRepository('Rainmaker:Container')->getNextAvailableNetwork());
+    }
+
+    if (empty($this->getContainer()->getIPAddress())) {
+      $this->getContainer()->setIPAddress(
+        $this->getEntityManager()->getRepository('Rainmaker:Container')->getNextAvailableNetworkHostAddress($this->getContainer()));
+    }
+  }
+
+  /**
+   * Configures the default DHCP settings for a project branch container instance.
+   */
+  protected function setProjectBranchContainerDnsDefaults()
+  {
+    $project = $this->getEntityManager()->getRepository('Rainmaker:Container')->getParentContainer($this->getContainer());
+
+    if (empty($this->getContainer()->getNetworkAddress())) {
+      $this->getContainer()->setNetworkAddress($project->getNetworkAddress());
+    }
+
+    if (empty($this->getContainer()->getIPAddress())) {
+      $this->getContainer()->setIPAddress($this->getEntityManager()->getRepository('Rainmaker:Container')->getNextAvailableNetworkHostAddress($project));
+    }
+  }
+
+  /**
+   * Writes the DHCPD configuration file specific to the Rainmaker project Linux container to the filesystem.
+   */
+  protected function writeProjectDhcpHostFile()
   {
     $config = Template::render('dhcp/host.twig', array(
       'fqdn' => $this->getContainer()->getHostname(),
@@ -48,12 +97,27 @@ class DhcpManager extends ComponentManager {
   }
 
   /**
-   * Writes to the filesystem the DHCPD file which includes the DHCPD settings files for each specific container
+   * Writes the DHCPD configuration file specific to the Rainmaker project branch Linux container to the filesystem.
+   */
+  protected function writeProjectBranchDhcpHostFile()
+  {
+    $config = Template::render('dhcp/host.twig', array(
+      'fqdn' => $this->getContainer()->getHostname(),
+      'hwaddr' => $this->getContainer()->getLxcHwAddr(),
+      'ipaddr' => $this->getContainer()->getIPAddress()
+    ));
+
+    $file = '/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.host.conf.d/' . $this->getContainer()->reverseHostname() . '.conf';
+    $this->getFilesystem()->putFileContents($file, $config);
+  }
+
+
+
+  /**
+   * Writes to the filesystem the DHCPD file which includes the DHCPD settings files for each specific container.
    */
   protected function writeDhcpHostIncludeFile()
   {
-//    $containers = $this->getEntityManager()->getRepository('Rainmaker:Container')->getAllContainersOrderedForHostsInclude();
-//    var_dump($containers);
     $config = Template::render('dhcp/dhcpd.host.conf.twig', array(
       'containers' => $this->getEntityManager()->getRepository('Rainmaker:Container')->getAllContainersOrderedForHostsInclude()
     ));
@@ -63,7 +127,7 @@ class DhcpManager extends ComponentManager {
   }
 
   /**
-   * Writes the DHCPD configuration file specific to this group of Linux containers to the filesystem
+   * Writes the DHCPD configuration file specific to this group of Linux containers to the filesystem.
    */
   protected function writeDhcpClassFile()
   {
@@ -76,7 +140,7 @@ class DhcpManager extends ComponentManager {
   }
 
   /**
-   * Writes to the filesystem the DHCPD file which includes the DHCPD settings files for each class/group of containers
+   * Writes to the filesystem the DHCPD file which includes the DHCPD settings files for each class/group of containers.
    */
   protected function writeDhcpClassIncludeFile()
   {
@@ -89,7 +153,7 @@ class DhcpManager extends ComponentManager {
   }
 
   /**
-   * Writes the DHCPD configuration file for the subnet the containers reside in to the filesystem
+   * Writes the DHCPD configuration file for the subnet the containers reside in to the filesystem.
    */
   protected function writeDhcpSubnetFile()
   {
@@ -102,6 +166,9 @@ class DhcpManager extends ComponentManager {
     $this->getFilesystem()->putFileContents($file, $config);
   }
 
+  /**
+   * Reloads the DHCP service.
+   */
   protected function reloadDhcpService()
   {
     try {

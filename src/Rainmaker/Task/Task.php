@@ -5,7 +5,7 @@ namespace Rainmaker\Task;
 use Rainmaker\RainmakerException;
 
 /**
- * A class for representing the unit of work required to perform some task
+ * A class for representing the unit of work required to perform some task.
  *
  * @package Rainmaker\Task
  */

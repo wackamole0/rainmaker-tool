@@ -3,7 +3,7 @@
 namespace Rainmaker\Util;
 
 /**
- * A wrapper class for Twig template rendering
+ * A wrapper class for Twig template rendering.
  */
 class Template {
 
@@ -13,7 +13,7 @@ class Template {
   protected static $twig = null;
 
   /**
-   * Renders a Twig template
+   * Renders a Twig template.
    *
    * @param $name
    * @param array $context

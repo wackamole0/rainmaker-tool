@@ -8,14 +8,14 @@ use Rainmaker\Entity\Container;
 use Rainmaker\Util\Template;
 
 /**
- * A class for managing the BIND9 DNS service in a Rainmaker environment
+ * A class for managing the BIND9 DNS service in a Rainmaker environment.
  *
  * @package Rainmaker\ComponentManager
  */
 class BindManager extends ComponentManager {
 
   /**
-   * Create an new Linux container for the given abstract container
+   * Create an new Linux container for the given Rainmaker project container.
    *
    * @param \Rainmaker\Entity\Container $container
    */
@@ -23,9 +23,9 @@ class BindManager extends ComponentManager {
   {
     $this->container = $container;
 
-    $this->setContainerDnsDefaults();
-    $this->writeDnsZoneFile();
-    $this->writeDnsZonePtrFile();
+    $this->setProjectContainerDnsDefaults();
+    $this->writeProjectDnsZoneFile();
+    $this->writeProjectDnsZonePtrFile();
     $this->writeRainmakerDbFile();
     $this->writeBindLocalConfFile();
     if ($reloadBindService) {
@@ -34,9 +34,26 @@ class BindManager extends ComponentManager {
   }
 
   /**
-   * Configures the default DNS zone settings for a container instance
+   * Create an new Linux container for the given Rainmaker project branch container.
+   *
+   * @param \Rainmaker\Entity\Container $container
    */
-  protected function setContainerDnsDefaults()
+  public function configureDnsZoneForProjectBranchContainer(Container $container, $reloadBindService = false)
+  {
+    $this->container = $container;
+
+    $this->setProjectBranchContainerDnsDefaults();
+    $this->writeProjectBranchDnsZoneFile();
+    $this->writeProjectBranchDnsZonePtrFile();
+    if ($reloadBindService) {
+      $this->reloadBindService();
+    }
+  }
+
+  /**
+   * Configures the default DNS zone settings for a Rainmaker project container instance.
+   */
+  protected function setProjectContainerDnsDefaults()
   {
     if (empty($this->getContainer()->getDnsZoneTtl())) {
       $this->getContainer()->setDnsZoneTtl(604800);
@@ -76,9 +93,17 @@ class BindManager extends ComponentManager {
   }
 
   /**
-   * Writes the DNS zone file for the Linux container to the filesystem
+   * Configures the default DNS zone settings for a Rainmaker project branch container instance.
    */
-  protected function writeDnsZoneFile()
+  protected function setProjectBranchContainerDnsDefaults()
+  {
+
+  }
+
+  /**
+   * Writes the DNS zone file for the Rainmaker project Linux container to the filesystem.
+   */
+  protected function writeProjectDnsZoneFile()
   {
     $config = Template::render('bind/zone.twig', array(
       'repo' => $this->getEntityManager()->getRepository('Rainmaker:Container'),
@@ -90,9 +115,24 @@ class BindManager extends ComponentManager {
   }
 
   /**
-   * Writes the DNS zone PTR file for the Linux container to the filesystem
+   * Writes the DNS zone file for the Rainmaker project branch Linux container to the filesystem.
    */
-  protected function writeDnsZonePtrFile()
+  protected function writeProjectBranchDnsZoneFile()
+  {
+    $project = $this->getEntityManager()->getRepository('Rainmaker:Container')->getParentContainer($this->getContainer());
+    $config = Template::render('bind/zone.twig', array(
+      'repo' => $this->getEntityManager()->getRepository('Rainmaker:Container'),
+      'container' => $project
+    ));
+
+    $file = '/var/lib/lxc/services/rootfs/etc/bind/db.rainmaker/db.' . $project->getDomain();
+    $this->getFilesystem()->putFileContents($file, $config);
+  }
+
+  /**
+   * Writes the DNS zone PTR file for the Rainmaker project Linux container to the filesystem.
+   */
+  protected function writeProjectDnsZonePtrFile()
   {
     $config = Template::render('bind/ptr-zone.twig', array(
       'repo' => $this->getEntityManager()->getRepository('Rainmaker:Container'),
@@ -104,7 +144,22 @@ class BindManager extends ComponentManager {
   }
 
   /**
-   * Writes the Rainmaker Bind DB file for the Linux container to the filesystem
+   * Writes the DNS zone PTR file for the Rainmaker project branch Linux container to the filesystem.
+   */
+  protected function writeProjectBranchDnsZonePtrFile()
+  {
+    $project = $this->getEntityManager()->getRepository('Rainmaker:Container')->getParentContainer($this->getContainer());
+    $config = Template::render('bind/ptr-zone.twig', array(
+      'repo' => $this->getEntityManager()->getRepository('Rainmaker:Container'),
+      'container' => $project
+    ));
+
+    $file = '/var/lib/lxc/services/rootfs/etc/bind/db.rainmaker/db.' . $this->getContainer()->networkPrefix();
+    $this->getFilesystem()->putFileContents($file, $config);
+  }
+
+  /**
+   * Writes the Rainmaker Bind DB file for the Linux container to the filesystem.
    */
   protected function writeRainmakerDbFile()
   {
@@ -117,7 +172,7 @@ class BindManager extends ComponentManager {
   }
 
   /**
-   * Writes the local Bind named configuration file to the filesystem
+   * Writes the local Bind named configuration file to the filesystem.
    */
   protected function writeBindLocalConfFile()
   {
@@ -129,6 +184,9 @@ class BindManager extends ComponentManager {
     $this->getFilesystem()->putFileContents($file, $config);
   }
 
+  /**
+   * Reloads the Bind service.
+   */
   protected function reloadBindService()
   {
     try {
