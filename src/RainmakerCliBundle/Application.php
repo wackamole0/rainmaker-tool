@@ -56,7 +56,11 @@ class Application extends ParentApplication {
     $commands = array();
     $commands[] = new Command\ProjectListCommand();
     $commands[] = new Command\ProjectCreateCommand();
+    $commands[] = new Command\ProjectStartCommand();
+    $commands[] = new Command\ProjectStopCommand();
     $commands[] = new Command\ProjectDestroyCommand();
+    $commands[] = new Command\ProjectBranchStartCommand();
+    $commands[] = new Command\ProjectBranchStopCommand();
     $commands[] = new Command\WelcomeCommand();
     return $commands;
   }

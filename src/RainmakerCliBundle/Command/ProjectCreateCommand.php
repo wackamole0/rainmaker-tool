@@ -3,9 +3,11 @@
 namespace RainmakerCliBundle\Command;
 
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Rainmaker\Entity\ContainerRepository;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
 class ProjectCreateCommand extends RainmakerCommand
@@ -21,22 +23,49 @@ class ProjectCreateCommand extends RainmakerCommand
       ->addArgument(
         'name',
         InputArgument::OPTIONAL,
-        'The friendly name of the new project'
-      )
-      ->addArgument(
-        'uname',
-        InputArgument::OPTIONAL,
         'The unique name of the new project'
       )
-      ->addArgument(
+      ->addOption(
+        'fname',
+        null,
+        InputOption::VALUE_REQUIRED,
+        'The friendly name of the new project'
+      )
+      ->addOption(
         'domain',
-        InputArgument::OPTIONAL,
+        null,
+        InputOption::VALUE_REQUIRED,
         'The domain name of the new project'
       )
-      ->addArgument(
+      ->addOption(
         'hostname',
-        InputArgument::OPTIONAL,
+        null,
+        InputOption::VALUE_REQUIRED,
         'The host name of the new project'
+      )
+      ->addOption(
+        'newbranch',
+        null,
+        InputOption::VALUE_NONE,
+        'If this option is present an initial Rainmaker branch container will be created inside the new Rainmaker project container'
+      )
+      ->addOption(
+        'branch-name',
+        null,
+        InputOption::VALUE_REQUIRED,
+        'The unique name of the new project branch'
+      )
+      ->addOption(
+        'branch-fname',
+        null,
+        InputOption::VALUE_REQUIRED,
+        'The friendly name of the new project branch'
+      )
+      ->addOption(
+        'branch-hostname',
+        null,
+        InputOption::VALUE_REQUIRED,
+        'The host name of the new project branch'
       );
   }
 
@@ -55,25 +84,30 @@ class ProjectCreateCommand extends RainmakerCommand
 
     $repository = $this->getEntityManager()->getRepository('Rainmaker:Container');
 
-    $friendlyName = $input->getArgument('name');
+    $uniqueName = $input->getArgument('name');
+    $friendlyName = $input->getOption('fname');
+    if (empty($uniqueName)) {
+      if ($input->isInteractive()) {
+
+        if (empty($friendlyName)) {
+          $friendlyName = $this->askForProjectFriendlyName($input, $output);
+        }
+
+        $uniqueName = $this->askForProjectUniqueName($input, $output,
+          $repository->friendlyNameToContainerName($friendlyName));
+      }
+      else {
+        $output->writeln("<error>You must specify a unique name for the project.</error>");
+        return 1;
+      }
+    }
+
     if (empty($friendlyName)) {
       if ($input->isInteractive()) {
         $friendlyName = $this->askForProjectFriendlyName($input, $output);
       }
       else {
         $output->writeln("<error>You must specify a friendly name for the project.</error>");
-        return 1;
-      }
-    }
-
-    $uniqueName = $input->getArgument('uname');
-    if (empty($uniqueName)) {
-      if ($input->isInteractive()) {
-        $uniqueName = $this->askForProjectUniqueName($input, $output,
-          $repository->friendlyNameToContainerName($friendlyName));
-      }
-      else {
-        $output->writeln("<error>You must specify a unique name for the project.</error>");
         return 1;
       }
     }
@@ -85,7 +119,7 @@ class ProjectCreateCommand extends RainmakerCommand
 
     //
 
-    $domain = $input->getArgument('domain');
+    $domain = $input->getOption('domain');
     if (empty($domain)) {
       if ($input->isInteractive()) {
         $defaultDomain  = $uniqueName . '.localdev';
@@ -97,7 +131,7 @@ class ProjectCreateCommand extends RainmakerCommand
       }
     }
 
-    $hostname = $input->getArgument('hostname');
+    $hostname = $input->getOption('hostname');
     if (empty($hostname)) {
       if ($input->isInteractive()) {
         $defaultHostname  = 'cluster.' . $domain;
@@ -109,13 +143,66 @@ class ProjectCreateCommand extends RainmakerCommand
       }
     }
 
-    $this->setContainerEntity($repository->createContainer($uniqueName, $friendlyName, false));
-    $this->getContainerEntity()
+    $createBranch = $input->getOption('newbranch');
+    if (empty($createBranch)) {
+      if ($input->isInteractive()) {
+        $createBranch = $this->askWhetherToCreateBranch($input, $output);
+      }
+    }
+
+    $branchName = $input->getOption('branch-name');
+    $branchFriendlyName = $input->getOption('branch-fname');
+    $branchHostname = $input->getOption('branch-hostname');
+
+    if ($createBranch && empty($branchName)) {
+      if ($input->isInteractive()) {
+        $branchName = $this->askForProjectBranchUniqueName($input, $output, $uniqueName . '.prod');
+      }
+      else {
+        $output->writeln("<error>You must specify a unique name for the project branch.</error>");
+        return 1;
+      }
+    }
+
+    if ($createBranch && empty($branchFriendlyName)) {
+      if ($input->isInteractive()) {
+        $branchFriendlyName = $this->askForProjectBranchFriendlyName($input, $output);
+      }
+      else {
+        $output->writeln("<error>You must specify a friendly name for the project branch.</error>");
+        return 1;
+      }
+    }
+
+    if ($createBranch && empty($branchHostname)) {
+      if ($input->isInteractive()) {
+        $defaultHostname  = $domain;
+        $branchHostname = $this->askForProjectHostName($input, $output, $defaultHostname);
+      }
+      else {
+        $output->writeln("<error>You must specify a host name for the project branch.</error>");
+        return 1;
+      }
+    }
+
+    $project = $repository->createContainer($uniqueName, $friendlyName, false)
       ->setDomain($domain)
       ->setHostname($hostname);
-    $repository->saveContainer($this->getContainerEntity());
+    $repository->saveContainer($project);
+    $this->setContainerEntity($project);
 
-    $this->getConfiguredTask()->setContainer($this->getContainerEntity());
+    $this->getConfiguredTask()->setContainer($project);
+
+    if ($createBranch) {
+      $branch = $repository->createContainer($branchName, $branchFriendlyName, false)
+        ->setDomain($domain)
+        ->setHostname($branchHostname)
+        ->setParentId($project->getId());
+      $repository->saveContainer($branch);
+    }
+
+    $this->getConfiguredTask()->setBranchContainer($branch);
+
     parent::execute($input, $output);
   }
 
@@ -141,6 +228,24 @@ class ProjectCreateCommand extends RainmakerCommand
   {
     $text = 'Enter the host name for this project [' . $defaultHostname . ']:';
     return $this->getHelper('question')->ask($input, $output, new Question($text, $defaultHostname));
+  }
+
+  protected function askWhetherToCreateBranch(InputInterface $input, OutputInterface $output)
+  {
+    return $this->getHelper('question')->ask($input, $output,
+      new ConfirmationQuestion('Would you like to create a new initial branch in this project?', false));
+  }
+
+  protected function askForProjectBranchUniqueName(InputInterface $input, OutputInterface $output, $defaultName = NULL)
+  {
+    $text = 'Enter the unique container name for this project branch [' . $defaultName . ']:';
+    return $this->getHelper('question')->ask($input, $output, new Question($text, $defaultName));
+  }
+
+  protected function askForProjectBranchFriendlyName(InputInterface $input, OutputInterface $output)
+  {
+    $text = 'Enter the human friendly name for this project branch:';
+    return $this->getHelper('question')->ask($input, $output, new Question($text));
   }
 
 }

@@ -4,6 +4,7 @@ namespace Rainmaker\ComponentManager;
 
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Rainmaker\Process\FstabMountProcess;
 use Rainmaker\Entity\Container;
 use Rainmaker\Util\Template;
 
@@ -74,7 +75,7 @@ class FstabManager extends ComponentManager {
     $this->getProcessRunner();
 
     try {
-      $process = new Process('mount ' . $mount['target']);
+      $process = new FstabMountProcess($mount['target']);
       $this->getProcessRunner()->run($process);
     } catch (ProcessFailedException $e) {
       echo $e->getMessage();

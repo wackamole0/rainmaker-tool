@@ -137,6 +137,11 @@ class Container
   protected $state = 0;
 
   /**
+   * @var Container
+   */
+  protected $cloneSource;
+
+  /**
    * Get id.
    *
    * @return integer
@@ -579,6 +584,29 @@ class Container
   public function setState($state)
   {
     $this->state = $state;
+    return $this;
+  }
+
+  /**
+   * Returns the container that this container will be cloned from.
+   *
+   * @return Container
+   */
+  public function getCloneSource()
+  {
+    return $this->cloneSource;
+  }
+
+  /**
+   * Sets the container that this container will be cloned from.
+   *
+   * @param Container $cloneSource
+   * @return Container
+   */
+  public function setCloneSource($cloneSource)
+  {
+    $this->cloneSource = $cloneSource;
+
     return $this;
   }
 

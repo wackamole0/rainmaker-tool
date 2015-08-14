@@ -4,6 +4,7 @@ namespace Rainmaker\ComponentManager;
 
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Rainmaker\Process\Dhcp\ReloadDhcpServiceProcess;
 use Rainmaker\Entity\Container;
 use Rainmaker\Util\Template;
 
@@ -172,7 +173,7 @@ class DhcpManager extends ComponentManager {
   protected function reloadDhcpService()
   {
     try {
-      $process = new Process('lxc-attach -n services -- service isc-dhcp-server restart');
+      $process = new ReloadDhcpServiceProcess();
       $this->getProcessRunner()->run($process);
     } catch (ProcessFailedException $e) {
       echo $e->getMessage();

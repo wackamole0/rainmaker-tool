@@ -4,6 +4,14 @@ namespace Rainmaker\ComponentManager;
 
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Rainmaker\Process\Lxc\CreateProjectContainerProcess;
+use Rainmaker\Process\Lxc\CreateProjectBranchContainerProcess;
+use Rainmaker\Process\Lxc\CloneProjectBranchContainerProcess;
+use Rainmaker\Process\Lxc\GetContainerStatusProcess;
+use Rainmaker\Process\Lxc\StartProjectContainerProcess;
+use Rainmaker\Process\Lxc\StopProjectContainerProcess;
+use Rainmaker\Process\Lxc\StartProjectBranchContainerProcess;
+use Rainmaker\Process\Lxc\StopProjectBranchContainerProcess;
 use Rainmaker\Entity\Container;
 use Rainmaker\Util\Template;
 
@@ -26,7 +34,7 @@ class LxcManager extends ComponentManager {
     $this->container = $container;
 
     try {
-      $process = new Process('lxc-create --name ' . escapeshellarg($this->getContainer()->getName()) . ' --bdev btrfs --template rainmaker-project');
+      $process = new CreateProjectContainerProcess($this->getContainer());
       $process->setTimeout(static::DEFAULT_LXC_BUILD_TIMEOUT);
       $this->getProcessRunner()->run($process);
     } catch (ProcessFailedException $e) {
@@ -39,12 +47,31 @@ class LxcManager extends ComponentManager {
    *
    * @param Container $container
    */
-  public function createProjectBranchContainer(Container $container) {
+  public function createProjectBranchContainer(Container $container)
+  {
     $this->container = $container;
     $project = $this->getEntityManager()->getRepository('Rainmaker:Container')->getParentContainer($container);
-
     try {
-      $process = new Process('lxc-attach -n ' . $project->getName() . ' -- lxc-create --name ' . escapeshellarg($this->getContainer()->getName()) . ' --bdev btrfs --template rainmaker-project-branch');
+      $process = new CreateProjectBranchContainerProcess($this->getContainer(), $project);
+      $process->setTimeout(static::DEFAULT_LXC_BUILD_TIMEOUT);
+      $this->getProcessRunner()->run($process);
+    } catch (ProcessFailedException $e) {
+      echo $e->getMessage();
+    }
+  }
+
+  /**
+   * Creates a clone of a Linux container for a Rainmaker project branch.
+   *
+   * @param Container $newBranchContainer
+   * @param Container $sourceBranchContainer
+   */
+  public function cloneProjectBranchContainer(Container $newBranchContainer, Container $sourceBranchContainer)
+  {
+    $this->container = $newBranchContainer;
+    $project = $this->getEntityManager()->getRepository('Rainmaker:Container')->getParentContainer($newBranchContainer);
+    try {
+      $process = new CloneProjectBranchContainerProcess($newBranchContainer, $sourceBranchContainer, $project);
       $process->setTimeout(static::DEFAULT_LXC_BUILD_TIMEOUT);
       $this->getProcessRunner()->run($process);
     } catch (ProcessFailedException $e) {
@@ -109,9 +136,8 @@ class LxcManager extends ComponentManager {
   public function startProjectContainer(Container $container)
   {
     try {
-      $process = new Process('lxc-info -s -n ' . $container->getName());
-      $this->getProcessRunner()->run($process);
-      if (stristr($process->getOutput(), 'stopped') === FALSE) {
+      $process = new GetContainerStatusProcess($container);
+      if (stristr($this->getProcessRunner()->run($process), 'stopped') === FALSE) {
         return;
       }
     } catch (ProcessFailedException $e) {
@@ -119,7 +145,7 @@ class LxcManager extends ComponentManager {
     }
 
     try {
-      $process = new Process('lxc-start -d -n ' . $container->getName());
+      $process = new StartProjectContainerProcess($container);
       $this->getProcessRunner()->run($process);
       $container->setState(Container::STATE_RUNNING);
       $this->getEntityManager()->getRepository('Rainmaker:Container')->saveContainer($container);
@@ -135,14 +161,12 @@ class LxcManager extends ComponentManager {
    */
   public function startProjectBranchContainer(Container $container)
   {
-    $project = $this->getEntityManager()->getRepository('Rainmaker:Container')->getParentContainer($this->getContainer());
+    $project = $this->getEntityManager()->getRepository('Rainmaker:Container')->getParentContainer($container);
 
     try {
       $this->startProjectContainer($project);
-
-      $process = new Process('lxc-info -s -n ' . $container->getName());
-      $this->getProcessRunner()->run($process);
-      if (stristr($process->getOutput(), 'stopped') === FALSE) {
+      $process = new GetContainerStatusProcess($container);
+      if (stristr($this->getProcessRunner()->run($process), 'stopped') === FALSE) {
         return;
       }
     } catch (ProcessFailedException $e) {
@@ -150,9 +174,79 @@ class LxcManager extends ComponentManager {
     }
 
     try {
-      $process = new Process('lxc-attach -n ' . $project->getName() . ' -- lxc-start -d -n ' . $container->getName());
+      $process = new StartProjectBranchContainerProcess($container, $project);
       $this->getProcessRunner()->run($process);
       $container->setState(Container::STATE_RUNNING);
+      $this->getEntityManager()->getRepository('Rainmaker:Container')->saveContainer($container);
+    } catch (ProcessFailedException $e) {
+      echo $e->getMessage();
+    }
+  }
+
+  /**
+   * Stops a Linux container.
+   *
+   * @param Container $container
+   */
+  public function stopContainer(Container $container) {
+    $this->container = $container;
+
+    if ($container->isProjectBranch()) {
+      $this->stopProjectBranchContainer($container);
+    }
+
+    $this->stopProjectContainer($container);
+  }
+
+  /**
+   * Stops a Rainmaker project Linux container.
+   *
+   * @param Container $container
+   */
+  public function stopProjectContainer(Container $container)
+  {
+    try {
+      $process = new GetContainerStatusProcess($container);
+      if (stristr($this->getProcessRunner()->run($process), 'running') === FALSE) {
+        return;
+      }
+    } catch (ProcessFailedException $e) {
+      echo $e->getMessage();
+    }
+
+    try {
+      $process = new StopProjectContainerProcess($container);
+      $this->getProcessRunner()->run($process);
+      $container->setState(Container::STATE_STOPPED);
+      $this->getEntityManager()->getRepository('Rainmaker:Container')->saveContainer($container);
+    } catch (ProcessFailedException $e) {
+      echo $e->getMessage();
+    }
+  }
+
+  /**
+   * Stops a Rainmaker project branch Linux container.
+   *
+   * @param Container $container
+   */
+  public function stopProjectBranchContainer(Container $container)
+  {
+    $project = $this->getEntityManager()->getRepository('Rainmaker:Container')->getParentContainer($container);
+
+    try {
+      $this->stopProjectContainer($project);
+      $process = new GetContainerStatusProcess($container);
+      if (stristr($this->getProcessRunner()->run($process), 'running') === FALSE) {
+        return;
+      }
+    } catch (ProcessFailedException $e) {
+      echo $e->getMessage();
+    }
+
+    try {
+      $process = new StopProjectBranchContainerProcess($container, $project);
+      $this->getProcessRunner()->run($process);
+      $container->setState(Container::STATE_STOPPED);
       $this->getEntityManager()->getRepository('Rainmaker:Container')->saveContainer($container);
     } catch (ProcessFailedException $e) {
       echo $e->getMessage();

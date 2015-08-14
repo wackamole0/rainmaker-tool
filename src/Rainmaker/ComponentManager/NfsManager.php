@@ -4,6 +4,7 @@ namespace Rainmaker\ComponentManager;
 
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Rainmaker\Process\Nfs\ReloadNfsServiceProcess;
 use Rainmaker\Entity\Container;
 use Rainmaker\Util\Template;
 
@@ -61,7 +62,7 @@ class NfsManager extends ComponentManager {
   protected function reloadService()
   {
     try {
-      $process = new Process('service nfs-kernel-server reload');
+      $process = new ReloadNfsServiceProcess();
       $this->getProcessRunner()->run($process);
     } catch (ProcessFailedException $e) {
       echo $e->getMessage();

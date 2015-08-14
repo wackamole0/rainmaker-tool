@@ -59,6 +59,40 @@ class ContainerRepository extends EntityRepository
   }
 
   /**
+   * Checks to see if a project container with the given name already exists in the database.
+   *
+   * @param $name
+   * @return bool
+   */
+  public function projectContainerExists($name)
+  {
+    return NULL !== $this->createQueryBuilder('c')
+      ->where('c.parentId IS NULL AND c.name = :name')
+      ->setParameter('name', $name)
+      ->orderBy('c.name', 'ASC')
+      ->getQuery()
+      ->setMaxResults(1)
+      ->getOneOrNullResult();
+  }
+
+  /**
+   * Checks to see if a project branch container with the given name already exists in the database.
+   *
+   * @param $name
+   * @return bool
+   */
+  public function projectBranchContainerExists($name)
+  {
+    return NULL !== $this->createQueryBuilder('c')
+      ->where('c.parentId IS NOT NULL AND c.name = :name')
+      ->setParameter('name', $name)
+      ->orderBy('c.name', 'ASC')
+      ->getQuery()
+      ->setMaxResults(1)
+      ->getOneOrNullResult();
+  }
+
+  /**
    * Returns an array of all the project containers. This is deprecated and getProjectParentContainers
    * is preferred.
    *

@@ -4,6 +4,7 @@ namespace Rainmaker\ComponentManager;
 
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Rainmaker\Process\Bind\ReloadBindServiceProcess;
 use Rainmaker\Entity\Container;
 use Rainmaker\Util\Template;
 
@@ -190,7 +191,7 @@ class BindManager extends ComponentManager {
   protected function reloadBindService()
   {
     try {
-      $process = new Process('lxc-attach -n services -- service bind9 reload');
+      $process = new ReloadBindServiceProcess();
       $this->getProcessRunner()->run($process);
     } catch (ProcessFailedException $e) {
       echo $e->getMessage();
