@@ -47,13 +47,16 @@ class CreateClone extends TaskWithSubtasks
       new \Rainmaker\Task\Subtask\ConfigureProjectBranchLinuxHost(),
 
       // Configure DHCP
-      //new \Rainmaker\Task\Subtask\AddProjectDhcpSettings(),
+      new \Rainmaker\Task\Subtask\AddProjectBranchDhcpSettings(),
 
       // Configure Bind
-      //new \Rainmaker\Task\Subtask\AddProjectDnsSettings(),
+      new \Rainmaker\Task\Subtask\AddProjectBranchDnsSettings(),
 
       // Configure fstab
-      //new \Rainmaker\Task\Subtask\AddProjectFstabEntries()
+      new \Rainmaker\Task\Subtask\AddProjectBranchFstabEntries(),
+
+      // Configure Nfs
+      new \Rainmaker\Task\Subtask\AddProjectBranchNfsEntries()
     );
 
     // Boot container

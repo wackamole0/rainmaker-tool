@@ -53,7 +53,23 @@ class CreateTest extends AbstractUnitTest
     $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/lxc/hostname'), $filesystemMock->getFileContents('/var/lib/lxc/' . $project->getName() . '/rootfs/var/lib/lxc/' . $cloneBranch->getName() . '/rootfs/etc/hostname'));
     $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/lxc/hosts'), $filesystemMock->getFileContents('/var/lib/lxc/' . $project->getName() . '/rootfs/var/lib/lxc/' . $cloneBranch->getName() . '/rootfs/etc/hosts'));
 
-    ;
+    // Check DHCP configuration
+
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/dhcp/host_localdev.test.develop.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.host.conf.d/localdev.test.develop.conf'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/dhcp/dhcpd.host.conf'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.host.conf'));
+
+    // Check DNS configuration
+
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/bind/db.test.localdev'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/db.rainmaker/db.test.localdev'));
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/bind/db.10.100.1'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/db.rainmaker/db.10.100.1'));
+
+    // Check Fstab configuration
+
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/fstab'), $filesystemMock->getFileContents('/etc/fstab'));
+    $this->assertTrue($filesystemMock->exists('/export/rainmaker/test.dev'));
+
+    // Check NFS configuration
+    $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/exports'), $filesystemMock->getFileContents('/etc/exports'));
   }
 
 
