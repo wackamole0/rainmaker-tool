@@ -52,6 +52,11 @@ class LxcManager extends ComponentManager {
     $this->container = $container;
     $project = $this->getEntityManager()->getRepository('Rainmaker:Container')->getParentContainer($container);
     try {
+      if (Container::STATE_STOPPED == $project->getState()) {
+        $this->startProjectContainer($project);
+        sleep(10); // Give the container a chance to start and settle before trying to connect to it
+      }
+
       $process = new CreateProjectBranchContainerProcess($this->getContainer(), $project);
       $process->setTimeout(static::DEFAULT_LXC_BUILD_TIMEOUT);
       $this->getProcessRunner()->run($process);
