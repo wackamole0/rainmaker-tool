@@ -64,6 +64,8 @@ class DhcpManager extends ComponentManager {
       $this->getContainer()->setIPAddress(
         $this->getEntityManager()->getRepository('Rainmaker:Container')->getNextAvailableNetworkHostAddress($this->getContainer()));
     }
+
+    $this->getEntityManager()->getRepository('Rainmaker:Container')->saveContainer($this->getContainer());
   }
 
   /**

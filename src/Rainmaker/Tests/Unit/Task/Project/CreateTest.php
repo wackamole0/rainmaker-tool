@@ -67,6 +67,8 @@ class CreateTest extends AbstractUnitTest
     $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/bind/named.conf.local'), $filesystemMock->getFileContents('/var/lib/lxc/services/rootfs/etc/bind/named.conf.local'));
 
     $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/fstab'), $filesystemMock->getFileContents('/etc/fstab'));
+
+    $this->assertEquals(Container::STATE_STOPPED, $project->getState());
   }
 
   /**
@@ -132,6 +134,8 @@ class CreateTest extends AbstractUnitTest
     // Check NFS configuration
     $this->assertEquals(file_get_contents($pathToTestAcceptanceFiles . '/exports'), $filesystemMock->getFileContents('/etc/exports'));
 
+    $this->assertEquals(Container::STATE_STOPPED, $project->getState());
+    $this->assertEquals(Container::STATE_STOPPED, $branch->getState());
   }
 
 
@@ -151,7 +155,8 @@ class CreateTest extends AbstractUnitTest
       ->setFriendlyName('Test')
       ->setHostname('cluster.test.localdev')
       ->setDomain('test.localdev')
-      ->setDnsZoneSerial('2015070501');
+      ->setDnsZoneSerial('2015070501')
+      ->setState(Container::STATE_PENDING_PROVISIONING);
     return $container;
   }
 
@@ -164,6 +169,7 @@ class CreateTest extends AbstractUnitTest
       ->setHostname('test.localdev')
       ->setDomain('test.localdev')
       ->setDnsZoneSerial('2015070501')
+      ->setState(Container::STATE_PENDING_PROVISIONING)
       ->setParentId(1);
     return $container;
   }

@@ -4,6 +4,7 @@ namespace Rainmaker\Task\Subtask;
 
 use Rainmaker\Task\TaskWithSubtasks;
 use Rainmaker\RainmakerException;
+use Rainmaker\Entity\Container;
 
 /**
  * Creates a Linux container for a Rainmaker project branch.
@@ -56,7 +57,10 @@ class CreateProjectBranch extends TaskWithSubtasks
       new \Rainmaker\Task\Subtask\AddProjectBranchFstabEntries(),
 
       // Configure Nfs
-      new \Rainmaker\Task\Subtask\AddProjectBranchNfsEntries()
+      new \Rainmaker\Task\Subtask\AddProjectBranchNfsEntries(),
+
+      // Mark container as stopped
+      new \Rainmaker\Task\Subtask\SetContainerStateToStopped()
 
     );
 
@@ -66,6 +70,15 @@ class CreateProjectBranch extends TaskWithSubtasks
     }
 
     return $subtasks;
+  }
+
+  public function performTask() {
+    try {
+      $this->getContainer()->setState(Container::STATE_PROVISIONING);
+      parent::performTask();
+    } catch (RainmakerException $e) {
+      throw $e;
+    }
   }
 
 }

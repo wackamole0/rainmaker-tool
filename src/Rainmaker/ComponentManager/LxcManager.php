@@ -145,6 +145,7 @@ class LxcManager extends ComponentManager {
     }
 
     try {
+      $container->setState(Container::STATE_STARTING);
       $process = new StartProjectContainerProcess($container);
       $this->getProcessRunner()->run($process);
       $container->setState(Container::STATE_RUNNING);
@@ -174,6 +175,7 @@ class LxcManager extends ComponentManager {
     }
 
     try {
+      $container->setState(Container::STATE_STARTING);
       $process = new StartProjectBranchContainerProcess($container, $project);
       $this->getProcessRunner()->run($process);
       $container->setState(Container::STATE_RUNNING);

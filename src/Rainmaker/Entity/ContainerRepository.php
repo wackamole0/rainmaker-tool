@@ -99,9 +99,13 @@ class ContainerRepository extends EntityRepository
    * @return Container[]
    * @deprecated
    */
-  public function getAllParentContainers() {
-    return $this->createQueryBuilder('c')
+  public function getAllParentContainers($status = NULL)
+  {
+    $status = $this->setDefaultStatusIfEmpty($status);
+    $qb = $this->createQueryBuilder('c');
+    return $qb
       ->where('c.parentId IS NULL')
+      ->andWhere($qb->expr()->notIn('c.state', ':status'))->setParameter(':status', $status)
       ->orderBy('c.name', 'ASC')
       ->getQuery()
       ->getResult();
@@ -124,11 +128,13 @@ class ContainerRepository extends EntityRepository
    * @param Container $container
    * @return Container[]
    */
-  public function getProjectBranchContainers(Container $container)
+  public function getProjectBranchContainers(Container $container, $status = NULL)
   {
-    return $this->createQueryBuilder('c')
-      ->where('c.parentId = :parentId')
-      ->setParameter('parentId', $container->getId())
+    $status = $this->setDefaultStatusIfEmpty($status);
+    $qb = $this->createQueryBuilder('c');
+    return $qb
+      ->where('c.parentId = :parentId')->setParameter('parentId', $container->getId())
+      ->andWhere($qb->expr()->notIn('c.state', ':status'))->setParameter(':status', $status)
       ->orderBy('c.name', 'ASC')
       ->getQuery()
       ->getResult();
@@ -139,14 +145,33 @@ class ContainerRepository extends EntityRepository
    *
    * @return Container[]
    */
-  public function getAllProjectBranchContainers()
+  public function getAllProjectBranchContainers($status = NULL)
   {
-    return $this->createQueryBuilder('c')
+    $status = $this->setDefaultStatusIfEmpty($status);
+    $qb = $this->createQueryBuilder('c');
+    return $qb
       ->where('c.parentId IS NOT NULL')
+      ->andWhere($qb->expr()->notIn('c.state', ':status'))->setParameter(':status', $status)
       ->orderBy('c.parentId', 'ASC')
       ->addOrderBy('c.name', 'ASC')
       ->getQuery()
       ->getResult();
+  }
+
+  /**
+   * Returns a list of container states of containers that should be excluded from containers sets.
+   * If $status is null then the default list of states ("Pending Provision" and "Destroying")
+   * is returned. In all other cases $status if returned unmodified.
+   *
+   * @return array
+   */
+  protected function setDefaultStatusIfEmpty($status = null)
+  {
+    if (is_null($status)) {
+      return array(Container::STATE_PENDING_PROVISIONING, Container::STATE_DESTROYING);
+    }
+
+    return $status;
   }
 
   // Network and IP address methods
@@ -293,8 +318,12 @@ class ContainerRepository extends EntityRepository
    *
    * @return Container[]
    */
-  public function getAllContainersOrderedForHostsInclude() {
-    return $this->createQueryBuilder('c')
+  public function getAllContainersOrderedForHostsInclude($status = NULL)
+  {
+    $status = $this->setDefaultStatusIfEmpty($status);
+    $qb = $this->createQueryBuilder('c');
+    return $qb
+      ->andWhere($qb->expr()->notIn('c.state', ':status'))->setParameter(':status', $status)
       ->orderBy('c.name', 'ASC')
       ->getQuery()
       ->getResult();

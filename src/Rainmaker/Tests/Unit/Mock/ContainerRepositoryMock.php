@@ -27,7 +27,7 @@ class ContainerRepositoryMock extends ContainerRepository
     return null;
   }
 
-  public function getAllParentContainers() {
+  public function getAllParentContainers($status = NULL) {
     return $this->getProjectContainers();
   }
 
@@ -41,17 +41,17 @@ class ContainerRepositoryMock extends ContainerRepository
     return $this->getProjectContainers();
   }
 
-  public function getProjectBranchContainers(Container $container)
+  public function getProjectBranchContainers(Container $container, $status = NULL)
   {
     return $this->branchContainers;
   }
 
-  public function getAllProjectBranchContainers()
+  public function getAllProjectBranchContainers($status = NULL)
   {
     return $this->allBranchContainers;
   }
 
-  public function getAllContainersOrderedForHostsInclude() {
+  public function getAllContainersOrderedForHostsInclude($status = NULL) {
     return $this->allContainersOrderedForHostsInclude;
   }
 
