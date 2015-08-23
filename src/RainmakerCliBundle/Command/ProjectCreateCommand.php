@@ -199,9 +199,8 @@ class ProjectCreateCommand extends RainmakerCommand
         ->setHostname($branchHostname)
         ->setParentId($project->getId());
       $repository->saveContainer($branch);
+      $this->getConfiguredTask()->setBranchContainer($branch);
     }
-
-    $this->getConfiguredTask()->setBranchContainer($branch);
 
     parent::execute($input, $output);
   }
