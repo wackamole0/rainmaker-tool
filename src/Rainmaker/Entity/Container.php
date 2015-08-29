@@ -639,7 +639,7 @@ class Container
     }
 
     if (stripos($this->downloadHost, 'http') !== 0) {
-      return 'http:://' . $this->downloadHost;
+      return 'http://' . $this->downloadHost;
     }
 
     return $this->downloadHost;
