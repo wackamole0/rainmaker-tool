@@ -82,6 +82,7 @@ class ProjectCreateCommand extends RainmakerCommand
     //lxc-create --template download --name "$GOLDPROJ_LXC_NAME" -- --dist ubuntu --release trusty --arch amd64
     //lxc-clone _golden-proj_ myproject
 
+    /** @var ContainerRepository $repository */
     $repository = $this->getEntityManager()->getRepository('Rainmaker:Container');
 
     $uniqueName = $input->getArgument('name');
@@ -189,6 +190,7 @@ class ProjectCreateCommand extends RainmakerCommand
       ->setDomain($domain)
       ->setHostname($hostname);
     $repository->saveContainer($project);
+    $project->setDownloadHost($this->getContainer()->getParameter('rainmaker_download_host'));
     $this->setContainerEntity($project);
 
     $this->getConfiguredTask()->setContainer($project);
@@ -199,6 +201,7 @@ class ProjectCreateCommand extends RainmakerCommand
         ->setHostname($branchHostname)
         ->setParentId($project->getId());
       $repository->saveContainer($branch);
+      $branch->setDownloadHost($this->getContainer()->getParameter('rainmaker_download_host'));
       $this->getConfiguredTask()->setBranchContainer($branch);
     }
 

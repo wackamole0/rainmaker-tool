@@ -137,6 +137,11 @@ class Container
   protected $state = 0;
 
   /**
+   * @var string|null
+   */
+  protected $downloadHost = null;
+
+  /**
    * @var Container
    */
   protected $cloneSource;
@@ -585,6 +590,59 @@ class Container
   {
     $this->state = $state;
     return $this;
+  }
+
+  /**
+   * Returns the host the Rainmaker container profiles should be downloaded from.
+   *
+   * @return string|null
+   */
+  public function getDownloadHost()
+  {
+    return $this->downloadHost;
+  }
+
+  /**
+   * Sets the host the Rainmaker container profiles should be downloaded from.
+   *
+   * @param string $downloadHost
+   * @return Container
+   */
+  public function setDownloadHost($downloadHost)
+  {
+    $this->downloadHost = $downloadHost;
+
+    return $this;
+  }
+
+  /**
+   * Returns true if the Rainmaker container profiles download host has been set and is not the
+   * empty string. Returns false in all other scenarios.
+   *
+   * @return bool
+   */
+  public function isSetDownloadHost()
+  {
+    return !empty($this->downloadHost);
+  }
+
+  /**
+   * Returns the Rainmaker container profiles download host with the default scheme of Http if
+   * a scheme is missing.
+   *
+   * @return string|null
+   */
+  public function getDownloadHostFullyQualified()
+  {
+    if (!$this->isSetDownloadHost()) {
+      return null;
+    }
+
+    if (stripos($this->downloadHost, 'http') !== 0) {
+      return 'http:://' . $this->downloadHost;
+    }
+
+    return $this->downloadHost;
   }
 
   /**
