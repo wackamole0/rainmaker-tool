@@ -40,7 +40,7 @@ class FstabManager extends ComponentManager {
     $this->checkAndCreateProjectBranchMountPoints();
     $this->writeFstab();
     if ($mountFstabEntries) {
-      $this->mountProjectFstabEntries();
+      $this->mountProjectBranchFstabEntries();
     }
   }
 
@@ -72,6 +72,22 @@ class FstabManager extends ComponentManager {
   protected function mountProjectFstabEntries()
   {
     $mount = $this->container->getFstabToolsMountPoint();
+    $this->getProcessRunner();
+
+    try {
+      $process = new FstabMountProcess($mount['target']);
+      $this->getProcessRunner()->run($process);
+    } catch (ProcessFailedException $e) {
+      echo $e->getMessage();
+    }
+  }
+
+  /**
+   * Mounts the fstab entries for the container that is currently being managed.
+   */
+  protected function mountProjectBranchFstabEntries()
+  {
+    $mount = $this->container->getFstabNfsMountPoint();
     $this->getProcessRunner();
 
     try {
