@@ -833,7 +833,7 @@ class Container
   {
     return array(
       'source' => $this->getLxcRootFs() . '/var/www/html',
-      'target' => $this->getLxcRootFs() . '/export/rainmaker/' . $this->getName()
+      'target' => '/export/rainmaker/' . $this->getName()
     );
   }
 
