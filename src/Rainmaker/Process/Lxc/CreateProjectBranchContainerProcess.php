@@ -17,7 +17,7 @@ class CreateProjectBranchContainerProcess extends Process {
   {
     $cmd = 'lxc-attach -n ' . $project->getName() . ' -- lxc-create --name ' . escapeshellarg($branch->getName()) . ' --bdev btrfs --template rainmaker-project-branch';
     if ($branch->isSetDownloadHost()) {
-      $cmd .= ' --downloadhost ' . $branch->getDownloadHostFullyQualified();
+      $cmd .= ' -- --downloadhost ' . $branch->getDownloadHostFullyQualified();
     }
     parent::__construct($cmd);
   }

@@ -17,7 +17,7 @@ class CreateProjectContainerProcess extends Process {
   {
     $cmd = 'lxc-create --name ' . escapeshellarg($container->getName()) . ' --bdev btrfs --template rainmaker-project';
     if ($container->isSetDownloadHost()) {
-      $cmd .= ' --downloadhost ' . $container->getDownloadHostFullyQualified();
+      $cmd .= ' -- --downloadhost ' . $container->getDownloadHostFullyQualified();
     }
     parent::__construct($cmd);
   }
