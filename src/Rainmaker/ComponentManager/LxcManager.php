@@ -241,7 +241,6 @@ class LxcManager extends ComponentManager {
     $project = $this->getEntityManager()->getRepository('Rainmaker:Container')->getParentContainer($container);
 
     try {
-      $this->stopProjectContainer($project);
       $process = new GetContainerStatusProcess($container, $project);
       if (stristr($this->getProcessRunner()->run($process), 'running') === FALSE) {
         return;
