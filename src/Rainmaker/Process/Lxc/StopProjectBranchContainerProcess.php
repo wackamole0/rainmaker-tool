@@ -13,9 +13,9 @@ use Rainmaker\Entity\Container;
  */
 class StopProjectBranchContainerProcess extends Process {
 
-  public function __construct(Container $container)
+  public function __construct(Container $branch, Container $project)
   {
-    parent::__construct('lxc-stop -n ' . $container->getName());
+    parent::__construct('lxc-attach -n ' . $project->getName() . ' -- lxc-stop -n ' . $branch->getName());
   }
 
 }
