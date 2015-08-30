@@ -31,9 +31,20 @@ class Application extends ParentApplication {
 
     $this->setDefaultTimezone();
 
+    $this->getCommands();
     $this->addCommands($this->getCommands());
 
     $this->setDefaultCommand('welcome');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function registerCommands()
+  {
+    if ($this->getKernel()->getEnvironment() != 'prod') {
+      parent::registerCommands();
+    }
   }
 
   /**
