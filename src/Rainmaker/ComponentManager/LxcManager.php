@@ -171,7 +171,7 @@ class LxcManager extends ComponentManager {
 
     try {
       $this->startProjectContainer($project);
-      $process = new GetContainerStatusProcess($container);
+      $process = new GetContainerStatusProcess($container, $project);
       if (stristr($this->getProcessRunner()->run($process), 'stopped') === FALSE) {
         return;
       }
@@ -242,7 +242,7 @@ class LxcManager extends ComponentManager {
 
     try {
       $this->stopProjectContainer($project);
-      $process = new GetContainerStatusProcess($container);
+      $process = new GetContainerStatusProcess($container, $project);
       if (stristr($this->getProcessRunner()->run($process), 'running') === FALSE) {
         return;
       }
