@@ -13,9 +13,13 @@ use Rainmaker\Entity\Container;
  */
 class GetContainerStatusProcess extends Process {
 
-  public function __construct(Container $container)
+  public function __construct(Container $container, Container $parent = null)
   {
-    parent::__construct('lxc-info -s -n ' . $container->getName());
+    $cmd = 'lxc-info -s -n ' . $container->getName();
+    if (!empty($parent)) {
+      $cmd = 'lxc-attach -n ' . $parent->getName() . ' -- ' . $cmd;
+    }
+    parent::__construct($cmd);
   }
 
 }
