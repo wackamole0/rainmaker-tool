@@ -27,8 +27,12 @@ class ContainerRepositoryMock extends ContainerRepository
     return null;
   }
 
-  public function getAllParentContainers($status = NULL) {
-    return $this->getProjectContainers();
+  public function getAllParentContainers($status = null)
+  {
+    return $this->excludeContainersWithStatuses(
+      $this->getProjectContainers(),
+      $this->setDefaultStatusIfEmpty($status)
+    );
   }
 
   public function getProjectContainers()
@@ -41,18 +45,28 @@ class ContainerRepositoryMock extends ContainerRepository
     return $this->getProjectContainers();
   }
 
-  public function getProjectBranchContainers(Container $container, $status = NULL)
+  public function getProjectBranchContainers(Container $container, $status = null)
   {
-    return $this->branchContainers;
+    return $this->excludeContainersWithStatuses(
+      $this->branchContainers,
+      $this->setDefaultStatusIfEmpty($status)
+    );
   }
 
-  public function getAllProjectBranchContainers($status = NULL)
+  public function getAllProjectBranchContainers($status = null)
   {
-    return $this->allBranchContainers;
+    return $this->excludeContainersWithStatuses(
+      $this->allBranchContainers,
+      $this->setDefaultStatusIfEmpty($status)
+    );
   }
 
-  public function getAllContainersOrderedForHostsInclude($status = NULL) {
-    return $this->allContainersOrderedForHostsInclude;
+  public function getAllContainersOrderedForHostsInclude($status = null)
+  {
+    return $this->excludeContainersWithStatuses(
+      $this->allContainersOrderedForHostsInclude,
+      $this->setDefaultStatusIfEmpty($status)
+    );
   }
 
   public function getParentContainer(Container $container)
@@ -62,6 +76,27 @@ class ContainerRepositoryMock extends ContainerRepository
     }
 
     return $container;
+  }
+
+  /**
+   * @param Container[] $containers
+   * @param $statuses
+   * @return Container[]
+   */
+  protected function excludeContainersWithStatuses($containers, $statuses)
+  {
+    if (!is_array($statuses)) {
+      $statuses = array($statuses);
+    }
+
+    $filteredContainers = array();
+    foreach ($containers as $container) {
+      if (!in_array($container->getState(), $statuses)) {
+        $filteredContainers[] = $container;
+      }
+    }
+
+    return $filteredContainers;
   }
 
 }

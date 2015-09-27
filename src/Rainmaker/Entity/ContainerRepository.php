@@ -99,7 +99,7 @@ class ContainerRepository extends EntityRepository
    * @return Container[]
    * @deprecated
    */
-  public function getAllParentContainers($status = NULL)
+  public function getAllParentContainers($status = null)
   {
     $status = $this->setDefaultStatusIfEmpty($status);
     $qb = $this->createQueryBuilder('c');
@@ -128,7 +128,7 @@ class ContainerRepository extends EntityRepository
    * @param Container $container
    * @return Container[]
    */
-  public function getProjectBranchContainers(Container $container, $status = NULL)
+  public function getProjectBranchContainers(Container $container, $status = null)
   {
     $status = $this->setDefaultStatusIfEmpty($status);
     $qb = $this->createQueryBuilder('c');
@@ -145,7 +145,7 @@ class ContainerRepository extends EntityRepository
    *
    * @return Container[]
    */
-  public function getAllProjectBranchContainers($status = NULL)
+  public function getAllProjectBranchContainers($status = null)
   {
     $status = $this->setDefaultStatusIfEmpty($status);
     $qb = $this->createQueryBuilder('c');
@@ -318,7 +318,7 @@ class ContainerRepository extends EntityRepository
    *
    * @return Container[]
    */
-  public function getAllContainersOrderedForHostsInclude($status = NULL)
+  public function getAllContainersOrderedForHostsInclude($status = null)
   {
     $status = $this->setDefaultStatusIfEmpty($status);
     $qb = $this->createQueryBuilder('c');

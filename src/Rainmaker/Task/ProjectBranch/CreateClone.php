@@ -4,6 +4,7 @@ namespace Rainmaker\Task\ProjectBranch;
 
 use Rainmaker\Task\TaskWithSubtasks;
 use Rainmaker\RainmakerException;
+use Rainmaker\Entity\Container;
 
 /**
  * Clones a Rainmaker project branch Linux Container.
@@ -67,21 +68,14 @@ class CreateClone extends TaskWithSubtasks
     return $subtasks;
   }
 
-//  public function performTask() {
-//    try {
-//      parent::performTask();
-//      if (!empty($this->branchContainer)) {
-//        $projectBranchTask = new \Rainmaker\Task\Subtask\CreateProjectBranch();
-//        $this->prepareSubtask($projectBranchTask);
-//        $projectBranchTask
-//          ->setContainer($this->branchContainer)
-//          ->setStartContainerAfterBuild($this->getStartBranchContainerAfterBuild())
-//          ->performTask();
-//      }
-//    } catch (RainmakerException $e) {
-//      throw $e;
-//    }
-//  }
+  public function performTask() {
+    try {
+      $this->getContainer()->setState(Container::STATE_PROVISIONING);
+      parent::performTask();
+    } catch (RainmakerException $e) {
+      throw $e;
+    }
+  }
 
   protected function generateLogHeader()
   {
