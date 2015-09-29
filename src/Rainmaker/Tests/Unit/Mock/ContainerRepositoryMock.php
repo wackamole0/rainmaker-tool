@@ -27,6 +27,10 @@ class ContainerRepositoryMock extends ContainerRepository
     return null;
   }
 
+  public function removeContainer(Container $container) {
+    return null;
+  }
+
   public function getAllParentContainers($status = null)
   {
     return $this->excludeContainersWithStatuses(

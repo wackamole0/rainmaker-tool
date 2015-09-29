@@ -837,4 +837,13 @@ class Container
     );
   }
 
+  /**
+   * Returns a boolean value indicating if the container is running or not.
+   *
+   * @return bool
+   */
+  public function isRunning() {
+    return $this->getState() == static::STATE_RUNNING;
+  }
+
 }

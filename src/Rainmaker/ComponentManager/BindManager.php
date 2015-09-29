@@ -16,7 +16,7 @@ use Rainmaker\Util\Template;
 class BindManager extends ComponentManager {
 
   /**
-   * Create an new Linux container for the given Rainmaker project container.
+   * Configures the DNS zones files for a Rainmaker project Linux container.
    *
    * @param \Rainmaker\Entity\Container $container
    */
@@ -35,7 +35,7 @@ class BindManager extends ComponentManager {
   }
 
   /**
-   * Create an new Linux container for the given Rainmaker project branch container.
+   * Configures the DNS zones files for a Rainmaker project branch Linux container.
    *
    * @param \Rainmaker\Entity\Container $container
    */
@@ -44,6 +44,22 @@ class BindManager extends ComponentManager {
     $this->container = $container;
 
     $this->setProjectBranchContainerDnsDefaults();
+    $this->writeProjectBranchDnsZoneFile();
+    $this->writeProjectBranchDnsZonePtrFile();
+    if ($reloadBindService) {
+      $this->reloadBindService();
+    }
+  }
+
+  /**
+   * Removes the DNS zones files for a Rainmaker project branch Linux container.
+   *
+   * @param \Rainmaker\Entity\Container $container
+   */
+  public function removeDnsZoneForProjectBranchContainer(Container $container, $reloadBindService = false)
+  {
+    $this->container = $container;
+
     $this->writeProjectBranchDnsZoneFile();
     $this->writeProjectBranchDnsZonePtrFile();
     if ($reloadBindService) {

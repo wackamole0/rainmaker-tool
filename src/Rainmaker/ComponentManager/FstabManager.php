@@ -5,6 +5,7 @@ namespace Rainmaker\ComponentManager;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Rainmaker\Process\FstabMountProcess;
+use Rainmaker\Process\FstabUnmountProcess;
 use Rainmaker\Entity\Container;
 use Rainmaker\Util\Template;
 
@@ -44,12 +45,34 @@ class FstabManager extends ComponentManager {
     }
   }
 
+  /**
+   * Updates the Linux fstab file with the entries relevant to the given project branch container.
+   *
+   * @param Container $container
+   */
+  public function removeProjectBranchFstabEntries(Container $container)
+  {
+    $this->container = $container;
+    $this->unmountProjectBranchFstabEntries();
+    $this->writeFstab();
+    $this->removeProjectBranchMountPoints();
+  }
+
   public function checkAndCreateProjectBranchMountPoints()
   {
     foreach($this->getFstabNfsMounts() as $mount) {
       if (!$this->getFilesystem()->exists($mount['target'])) {
         $this->getFilesystem()->mkdir($mount['target']);
       }
+    }
+  }
+
+  public function removeProjectBranchMountPoints()
+  {
+    $mount = $this->getEntityManager()->getRepository('Rainmaker:Container')->
+      getFstabNfsMountPointForContainer($this->container);
+    if ($this->getFilesystem()->exists($mount['target'])) {
+      $this->getFilesystem()->remove($mount['target']);
     }
   }
 
@@ -92,6 +115,22 @@ class FstabManager extends ComponentManager {
 
     try {
       $process = new FstabMountProcess($mount['target']);
+      $this->getProcessRunner()->run($process);
+    } catch (ProcessFailedException $e) {
+      echo $e->getMessage();
+    }
+  }
+
+  /**
+   * Unmounts the fstab entries for the container that is currently being managed.
+   */
+  protected function unmountProjectBranchFstabEntries()
+  {
+    $mount = $this->container->getFstabNfsMountPoint();
+    $this->getProcessRunner();
+
+    try {
+      $process = new FstabUnmountProcess($mount['target']);
       $this->getProcessRunner()->run($process);
     } catch (ProcessFailedException $e) {
       echo $e->getMessage();

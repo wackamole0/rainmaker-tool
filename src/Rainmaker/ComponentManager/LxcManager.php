@@ -6,6 +6,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Rainmaker\Process\Lxc\CreateProjectContainerProcess;
 use Rainmaker\Process\Lxc\CreateProjectBranchContainerProcess;
+use Rainmaker\Process\Lxc\DestroyProjectBranchContainerProcess;
 use Rainmaker\Process\Lxc\CloneProjectBranchContainerProcess;
 use Rainmaker\Process\Lxc\GetContainerStatusProcess;
 use Rainmaker\Process\Lxc\StartProjectContainerProcess;
@@ -66,19 +67,45 @@ class LxcManager extends ComponentManager {
   }
 
   /**
+   * Destroy the Linux container for the given Rainmaker project branch container.
+   *
+   * @param Container $container
+   */
+  public function destroyProjectBranchContainer(Container $container)
+  {
+    $this->container = $container;
+    $project = $this->getEntityManager()->getRepository('Rainmaker:Container')->getParentContainer($container);
+    try {
+      $process = new DestroyProjectBranchContainerProcess($this->getContainer(), $project);
+      $process->setTimeout(static::DEFAULT_LXC_BUILD_TIMEOUT);
+      $this->getProcessRunner()->run($process);
+    } catch (ProcessFailedException $e) {
+      echo $e->getMessage();
+    }
+  }
+
+  /**
    * Creates a clone of a Linux container for a Rainmaker project branch.
    *
    * @param Container $newBranchContainer
    * @param Container $sourceBranchContainer
    */
-  public function cloneProjectBranchContainer(Container $newBranchContainer, Container $sourceBranchContainer)
+  public function cloneProjectBranchContainer(Container $newBranchContainer, Container $sourceBranchContainer, $hotClone = false)
   {
     $this->container = $newBranchContainer;
     $project = $this->getEntityManager()->getRepository('Rainmaker:Container')->getParentContainer($newBranchContainer);
     try {
+      if (!$hotClone) {
+        $this->stopProjectBranchContainer($sourceBranchContainer);
+        sleep(5);
+      }
       $process = new CloneProjectBranchContainerProcess($newBranchContainer, $sourceBranchContainer, $project);
       $process->setTimeout(static::DEFAULT_LXC_BUILD_TIMEOUT);
       $this->getProcessRunner()->run($process);
+      if (!$hotClone) {
+        sleep(5);
+        $this->startProjectBranchContainer($sourceBranchContainer);
+      }
     } catch (ProcessFailedException $e) {
       echo $e->getMessage();
     }

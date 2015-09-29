@@ -48,6 +48,17 @@ class ContainerRepository extends EntityRepository
   }
 
   /**
+   * Remove a container from the database.
+   *
+   * @param Container $container
+   */
+  public function removeContainer(Container $container)
+  {
+    $this->getEntityManager()->remove($container);
+    $this->getEntityManager()->flush();
+  }
+
+  /**
    * Checks to see if a container with the given name already exists in the database.
    *
    * @param $name

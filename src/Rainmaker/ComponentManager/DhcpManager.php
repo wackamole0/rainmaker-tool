@@ -51,6 +51,21 @@ class DhcpManager extends ComponentManager {
   }
 
   /**
+   * Removes the DHCPD configuration files for a project branch container.
+   *
+   * @param Container $container
+   */
+  public function removeProjectBranchDhcpSettings(Container $container, $reloadDhcpService = false)
+  {
+    $this->container = $container;
+    $this->writeDhcpHostIncludeFile();
+    $this->removeProjectBranchDhcpHostFile();
+    if ($reloadDhcpService) {
+      $this->reloadDhcpService();
+    }
+  }
+
+  /**
    * Configures the default DHCP settings for a project container instance.
    */
   protected function setProjectContainerDnsDefaults()
@@ -114,7 +129,14 @@ class DhcpManager extends ComponentManager {
     $this->getFilesystem()->putFileContents($file, $config);
   }
 
-
+  /**
+   * Remove the DHCPD configuration file specific to the Rainmaker project branch Linux container from the filesystem.
+   */
+  protected function removeProjectBranchDhcpHostFile()
+  {
+    $file = '/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.host.conf.d/' . $this->getContainer()->reverseHostname() . '.conf';
+    $this->getFilesystem()->remove($file);
+  }
 
   /**
    * Writes to the filesystem the DHCPD file which includes the DHCPD settings files for each specific container.
