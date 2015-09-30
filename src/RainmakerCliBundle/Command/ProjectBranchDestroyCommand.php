@@ -7,7 +7,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 
-class ProjectDestroyCommand extends RainmakerCommand
+class ProjectBranchDestroyCommand extends RainmakerCommand
 {
 
   protected function configure()
@@ -15,8 +15,8 @@ class ProjectDestroyCommand extends RainmakerCommand
     parent::configure();
 
     $this
-      ->setName('project:destroy')
-      ->setDescription('Destroy a Rainmaker project container')
+      ->setName('project:branch:destroy')
+      ->setDescription('Destroy a Rainmaker project branch container')
       ->addArgument(
         'name',
         InputArgument::OPTIONAL,
@@ -26,7 +26,7 @@ class ProjectDestroyCommand extends RainmakerCommand
 
   public function task()
   {
-    return new \Rainmaker\Task\Project\Destroy();
+    return new \Rainmaker\Task\ProjectBranch\Destroy();
   }
 
   protected function execute(InputInterface $input, OutputInterface $output)
@@ -39,12 +39,12 @@ class ProjectDestroyCommand extends RainmakerCommand
         $uniqueName = $this->askForProjectUniqueName($input, $output);
       }
       else {
-        $output->writeln("<error>You must specify the unique name of project.</error>");
+        $output->writeln("<error>You must specify the unique name of project branch.</error>");
         return 1;
       }
     }
 
-    if (!$repository->projectContainerExists($uniqueName)) {
+    if (!$repository->projectBranchContainerExists($uniqueName)) {
       $output->writeln("<error>No container with the unique name specified exists.</error>");
       return 1;
     }
@@ -57,7 +57,7 @@ class ProjectDestroyCommand extends RainmakerCommand
 
   protected function askForProjectUniqueName(InputInterface $input, OutputInterface $output)
   {
-    $text = 'Enter the unique container name of a project:';
+    $text = 'Enter the unique container name of a project branch:';
     return $this->getHelper('question')->ask($input, $output, new Question($text));
   }
 
