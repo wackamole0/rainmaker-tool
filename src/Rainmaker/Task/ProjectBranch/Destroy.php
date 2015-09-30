@@ -17,8 +17,6 @@ class Destroy extends TaskWithSubtasks {
   public function getSubtasks()
   {
     $subtasks = array(
-      // Bootstrap container
-
       // Configure Nfs
       new \Rainmaker\Task\Subtask\RemoveProjectBranchNfsEntries(),
 
