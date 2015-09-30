@@ -35,6 +35,24 @@ class BindManager extends ComponentManager {
   }
 
   /**
+   * Removes the DNS zones files for a Rainmaker project Linux container.
+   *
+   * @param \Rainmaker\Entity\Container $container
+   */
+  public function removeDnsZoneForProjectContainer(Container $container, $reloadBindService = false)
+  {
+    $this->container = $container;
+
+    $this->removeProjectDnsZoneFile();
+    $this->removeProjectDnsZonePtrFile();
+    $this->writeRainmakerDbFile();
+    $this->writeBindLocalConfFile();
+    if ($reloadBindService) {
+      $this->reloadBindService();
+    }
+  }
+
+  /**
    * Configures the DNS zones files for a Rainmaker project branch Linux container.
    *
    * @param \Rainmaker\Entity\Container $container
@@ -132,6 +150,15 @@ class BindManager extends ComponentManager {
   }
 
   /**
+   * Removes the DNS zone file for the Rainmaker project Linux container to the filesystem.
+   */
+  protected function removeProjectDnsZoneFile()
+  {
+    $file = '/var/lib/lxc/services/rootfs/etc/bind/db.rainmaker/db.' . $this->getContainer()->getDomain();
+    $this->getFilesystem()->remove($file);
+  }
+
+  /**
    * Writes the DNS zone file for the Rainmaker project branch Linux container to the filesystem.
    */
   protected function writeProjectBranchDnsZoneFile()
@@ -158,6 +185,15 @@ class BindManager extends ComponentManager {
 
     $file = '/var/lib/lxc/services/rootfs/etc/bind/db.rainmaker/db.' . $this->getContainer()->networkPrefix();
     $this->getFilesystem()->putFileContents($file, $config);
+  }
+
+  /**
+   * Removes the DNS zone PTR file for the Rainmaker project Linux container to the filesystem.
+   */
+  protected function removeProjectDnsZonePtrFile()
+  {
+    $file = '/var/lib/lxc/services/rootfs/etc/bind/db.rainmaker/db.' . $this->getContainer()->networkPrefix();
+    $this->getFilesystem()->remove($file);
   }
 
   /**

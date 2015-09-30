@@ -31,6 +31,18 @@ class FstabManager extends ComponentManager {
   }
 
   /**
+   * Removes the Linux fstab file entries relevant to the given project container.
+   *
+   * @param Container $container
+   */
+  public function removeProjectFstabEntries(Container $container)
+  {
+    $this->container = $container;
+    $this->unmountProjectFstabEntries();
+    $this->writeFstab();
+  }
+
+  /**
    * Updates the Linux fstab file with the entries relevant to the given project branch container.
    *
    * @param Container $container
@@ -99,6 +111,22 @@ class FstabManager extends ComponentManager {
 
     try {
       $process = new FstabMountProcess($mount['target']);
+      $this->getProcessRunner()->run($process);
+    } catch (ProcessFailedException $e) {
+      echo $e->getMessage();
+    }
+  }
+
+  /**
+   * Unmounts the fstab entries for the container that is currently being managed.
+   */
+  protected function unmountProjectFstabEntries()
+  {
+    $mount = $this->container->getFstabToolsMountPoint();
+    $this->getProcessRunner();
+
+    try {
+      $process = new FstabUnmountProcess($mount['target']);
       $this->getProcessRunner()->run($process);
     } catch (ProcessFailedException $e) {
       echo $e->getMessage();

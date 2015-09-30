@@ -44,9 +44,12 @@ class ContainerRepositoryMock extends ContainerRepository
     return $this->projectContainers;
   }
 
-  public function getProjectParentContainers()
+  public function getProjectParentContainers($status = null)
   {
-    return $this->getProjectContainers();
+    return $this->excludeContainersWithStatuses(
+      $this->projectContainers,
+      $this->setDefaultStatusIfEmpty($status)
+    );
   }
 
   public function getProjectBranchContainers(Container $container, $status = null)

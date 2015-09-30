@@ -5,6 +5,7 @@ namespace Rainmaker\ComponentManager;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Rainmaker\Process\Lxc\CreateProjectContainerProcess;
+use Rainmaker\Process\Lxc\DestroyProjectContainerProcess;
 use Rainmaker\Process\Lxc\CreateProjectBranchContainerProcess;
 use Rainmaker\Process\Lxc\DestroyProjectBranchContainerProcess;
 use Rainmaker\Process\Lxc\CloneProjectBranchContainerProcess;
@@ -36,6 +37,24 @@ class LxcManager extends ComponentManager {
 
     try {
       $process = new CreateProjectContainerProcess($this->getContainer());
+      $process->setTimeout(static::DEFAULT_LXC_BUILD_TIMEOUT);
+      $this->getProcessRunner()->run($process);
+    } catch (ProcessFailedException $e) {
+      echo $e->getMessage();
+    }
+  }
+
+  /**
+   * Destroy the Linux container for the given Rainmaker project container.
+   *
+   * @param \Rainmaker\Entity\Container $container
+   */
+  public function destroyProjectContainer(Container $container)
+  {
+    $this->container = $container;
+
+    try {
+      $process = new DestroyProjectContainerProcess($this->getContainer());
       $process->setTimeout(static::DEFAULT_LXC_BUILD_TIMEOUT);
       $this->getProcessRunner()->run($process);
     } catch (ProcessFailedException $e) {

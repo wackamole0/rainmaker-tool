@@ -12,6 +12,6 @@ subnet 10.100.0.0 netmask 255.255.0.0 {
     allow members of "{{ container.getName() }}";
     range {{ repo.getNetworkHostAddrRangeMin(container) }} {{ repo.getNetworkHostAddrRangeMax(container) }};
   }
-
 {% endfor %}
+
 }

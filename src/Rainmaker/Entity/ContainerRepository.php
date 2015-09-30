@@ -127,10 +127,10 @@ class ContainerRepository extends EntityRepository
    *
    * @return Container[]
    */
-  public function getProjectParentContainers()
+  public function getProjectParentContainers($status = null)
   {
     //@todo Can we do away with this alias?
-    return $this->getAllParentContainers();
+    return $this->getAllParentContainers($status);
   }
 
   /**
