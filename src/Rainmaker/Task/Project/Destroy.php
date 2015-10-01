@@ -46,6 +46,7 @@ class Destroy extends TaskWithSubtasks {
 
     try {
       $this->getContainer()->setState(Container::STATE_DESTROYING);
+      $this->getEntityManager()->getRepository('Rainmaker:Container')->saveContainer($this->getContainer());
       parent::performTask();
     } catch (RainmakerException $e) {
       throw $e;

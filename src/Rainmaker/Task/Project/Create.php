@@ -99,6 +99,7 @@ class Create extends TaskWithSubtasks
   public function performTask() {
     try {
       $this->getContainer()->setState(Container::STATE_PROVISIONING);
+      $this->getEntityManager()->getRepository('Rainmaker:Container')->saveContainer($this->getContainer());
       parent::performTask();
       if (!empty($this->branchContainer)) {
         $projectBranchTask = new \Rainmaker\Task\Subtask\CreateProjectBranch();
