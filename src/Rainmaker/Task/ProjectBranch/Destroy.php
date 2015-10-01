@@ -5,7 +5,6 @@ namespace Rainmaker\Task\ProjectBranch;
 use Rainmaker\Task\TaskWithSubtasks;
 use Rainmaker\RainmakerException;
 use Rainmaker\Entity\Container;
-use Rainmaker\ComponentManager\LxcManager;
 
 /**
  * Destroys a Rainmaker project branch container.
