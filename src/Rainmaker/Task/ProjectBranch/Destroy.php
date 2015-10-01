@@ -38,6 +38,11 @@ class Destroy extends TaskWithSubtasks {
 
   public function performTask()
   {
+    $project = $this->getEntityManager()->getRepository('Rainmaker:Container')->getParentContainer($this->getContainer());
+    if (!$project->isRunning()) {
+      throw new RainmakerException('The project container is not running. It must be running before the project branch can be destroyed.');
+    }
+
     if ($this->getContainer()->isRunning()) {
       throw new RainmakerException('The container is running. It must be stopped before it can be destroyed.');
     }

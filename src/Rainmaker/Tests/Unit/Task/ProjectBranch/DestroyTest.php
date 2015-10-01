@@ -105,6 +105,37 @@ class DestroyTest extends AbstractUnitTest
     $task->performTask();
   }
 
+  /**
+   * Tests the destroying of a Rainmaker project branch Linux container when the parent container is not running.
+   *
+   * @expectedException \Rainmaker\RainmakerException
+   */
+  public function testDestroyProjectBranchWhenProjectStopped() {
+    $project = $this->createDummyProject();
+    $project->setState(Container::STATE_STOPPED);
+    $branches = $this->createDummyProjectBranches();
+    foreach ($branches as $branch) {
+      $branch->setState(Container::STATE_STOPPED);
+    }
+
+    $task = new Destroy();
+    $task->setContainer($branches[1]);
+
+    $entityManagerMock = $this->createEntityManagerMock(array($project), $branches, $project);
+    $task->setEntityManager($entityManagerMock);
+
+    $processRunnerMock = $this->createProcessRunnerMock();
+    $task->setProcessRunner($processRunnerMock);
+
+    $filesystemMock = $this->createFilesystemMock();
+    $task->setFilesystem($filesystemMock);
+
+    $logger = $this->createLogger();
+    $task->setLogger($logger);
+
+    $task->performTask();
+  }
+
 
   // Utility methods
 
