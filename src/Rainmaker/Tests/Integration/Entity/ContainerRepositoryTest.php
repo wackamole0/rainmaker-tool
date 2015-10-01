@@ -86,7 +86,7 @@ class ContainerRepositoryTest extends AbstractIntegrationTest
           'ipAddress' => '10.100.4.1',
         ),
         array(
-          'hostname'  => '@',
+          'hostname'  => 'test4.localdev.',
           'ipAddress' => '10.100.4.2',
         ),
         array(
