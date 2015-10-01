@@ -14,7 +14,7 @@ class FstabUnmountProcess extends Process {
 
   public function __construct($target)
   {
-    parent::__construct('unmount ' . $target);
+    parent::__construct('umount ' . $target);
   }
 
 }
