@@ -119,7 +119,8 @@ class ProjectBranchCloneCommand extends RainmakerCommand
     $project = $repository->getParentContainer($currentBranch);
     $newBranch = $repository->createContainer($newUniqueName, $newFriendlyName, false)
       ->setDomain($project->getDomain())
-      ->setHostname($newHostname);
+      ->setHostname($newHostname)
+      ->setParentId($project->getId());
     $repository->saveContainer($newBranch);
     $newBranch->setCloneSource($currentBranch);
     $newBranch->setDownloadHost($this->getContainer()->getParameter('rainmaker_download_host'));
