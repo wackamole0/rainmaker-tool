@@ -73,6 +73,8 @@ class CreateClone extends TaskWithSubtasks
       $this->getContainer()->setState(Container::STATE_PROVISIONING);
       $this->getEntityManager()->getRepository('Rainmaker:Container')->saveContainer($this->getContainer());
       parent::performTask();
+      $this->getContainer()->setState(Container::STATE_STOPPED);
+      $this->getEntityManager()->getRepository('Rainmaker:Container')->saveContainer($this->getContainer());
     } catch (RainmakerException $e) {
       throw $e;
     }
