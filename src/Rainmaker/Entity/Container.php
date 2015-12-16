@@ -818,8 +818,14 @@ class Container
   public function getFstabToolsMountPoint()
   {
     return array(
-      'source' => '/var/cache/lxc/rainmaker',
-      'target' => $this->getLxcRootFs() . '/var/cache/lxc/rainmaker'
+      array(
+        'source' => '/var/cache/lxc/rainmaker',
+        'target' => $this->getLxcRootFs() . '/var/cache/lxc/rainmaker'
+      ),
+      array(
+        'source' => '/srv/saltstack',
+        'target' => $this->getLxcRootFs() . '/srv/saltstack'
+      )
     );
   }
 

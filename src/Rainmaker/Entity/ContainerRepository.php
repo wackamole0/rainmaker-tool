@@ -471,7 +471,9 @@ class ContainerRepository extends EntityRepository
   {
     $mounts = array();
     foreach ($this->getAllContainersOrderedForFstabToolMounts() as $container) {
-      $mounts[] = $this->getFstabToolsMountPointForContainer($container);
+      foreach ($this->getFstabToolsMountPointForContainer($container) as $mount) {
+        $mounts[] = $mount;
+      }
     }
     return $mounts;
   }
@@ -504,8 +506,14 @@ class ContainerRepository extends EntityRepository
     }
 
     return array(
-      'source' => '/var/cache/lxc/rainmaker',
-      'target' => $container->getLxcRootFs() . '/var/cache/lxc/rainmaker'
+      array(
+        'source' => '/var/cache/lxc/rainmaker',
+        'target' => $container->getLxcRootFs() . '/var/cache/lxc/rainmaker'
+      ),
+      array(
+        'source' => '/srv/saltstack',
+        'target' => $container->getLxcRootFs() . '/srv/saltstack'
+      )
     );
   }
 

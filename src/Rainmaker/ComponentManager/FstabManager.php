@@ -106,12 +106,14 @@ class FstabManager extends ComponentManager {
    */
   protected function mountProjectFstabEntries()
   {
-    $mount = $this->container->getFstabToolsMountPoint();
+    $mounts = $this->container->getFstabToolsMountPoint();
     $this->getProcessRunner();
 
     try {
-      $process = new FstabMountProcess($mount['target']);
-      $this->getProcessRunner()->run($process);
+      foreach ($mounts as $mount) {
+        $process = new FstabMountProcess($mount['target']);
+        $this->getProcessRunner()->run($process);
+      }
     } catch (ProcessFailedException $e) {
       echo $e->getMessage();
     }
@@ -122,12 +124,14 @@ class FstabManager extends ComponentManager {
    */
   protected function unmountProjectFstabEntries()
   {
-    $mount = $this->container->getFstabToolsMountPoint();
+    $mounts = $this->container->getFstabToolsMountPoint();
     $this->getProcessRunner();
 
     try {
-      $process = new FstabUnmountProcess($mount['target']);
-      $this->getProcessRunner()->run($process);
+      foreach ($mounts as $mount) {
+        $process = new FstabUnmountProcess($mount['target']);
+        $this->getProcessRunner()->run($process);
+      }
     } catch (ProcessFailedException $e) {
       echo $e->getMessage();
     }
