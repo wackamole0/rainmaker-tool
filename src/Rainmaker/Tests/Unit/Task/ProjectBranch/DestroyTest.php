@@ -166,7 +166,8 @@ class DestroyTest extends AbstractUnitTest
       ->setDnsZoneRetry(86400)
       ->setDnsZoneExpire(2419200)
       ->setDnsZoneNegCacheTtl(604800)
-      ->setState(Container::STATE_RUNNING);
+      ->setState(Container::STATE_RUNNING)
+      ->setProfileName('rainmaker/default-project');
     return $container;
   }
 
@@ -194,6 +195,7 @@ class DestroyTest extends AbstractUnitTest
       ->setDnsZoneExpire(2419200)
       ->setDnsZoneNegCacheTtl(604800)
       ->setState(Container::STATE_RUNNING)
+      ->setProfileName('rainmaker/default-branch')
       ->setParentId(1);
     $containers[] = $container;
 
@@ -217,6 +219,7 @@ class DestroyTest extends AbstractUnitTest
       ->setDnsZoneExpire(2419200)
       ->setDnsZoneNegCacheTtl(604800)
       ->setState(Container::STATE_STOPPED)
+      ->setProfileName('rainmaker/default-branch')
       ->setParentId(1);
     $containers[] = $container;
 

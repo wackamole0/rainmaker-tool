@@ -156,7 +156,8 @@ class CreateTest extends AbstractUnitTest
       ->setHostname('cluster.test.localdev')
       ->setDomain('test.localdev')
       ->setDnsZoneSerial('2015070501')
-      ->setState(Container::STATE_PENDING_PROVISIONING);
+      ->setState(Container::STATE_PENDING_PROVISIONING)
+      ->setProfileName('rainmaker/default-project');
     return $container;
   }
 
@@ -170,6 +171,7 @@ class CreateTest extends AbstractUnitTest
       ->setDomain('test.localdev')
       ->setDnsZoneSerial('2015070501')
       ->setState(Container::STATE_PENDING_PROVISIONING)
+      ->setProfileName('rainmaker/default-branch')
       ->setParentId(1);
     return $container;
   }

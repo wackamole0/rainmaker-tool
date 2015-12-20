@@ -20,3 +20,9 @@ parameters:
 
     # Rainmaker Download Host e.g. http://image.rainmaker-dev.com
     rainmaker_download_host: ~
+
+    # Rainmaker Default Project Profile Name
+    rainmaker_default_project_profile: rainmaker/default-project-dev
+
+    # Rainmaker Default Project Branch Profile Name
+    rainmaker_default_project_branch_profile: rainmaker/default-branch-dev

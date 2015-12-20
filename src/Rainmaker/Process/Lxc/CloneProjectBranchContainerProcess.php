@@ -15,7 +15,7 @@ class CloneProjectBranchContainerProcess extends Process {
 
   public function __construct(Container $newBranchContainer, Container $sourceBranchContainer, Container $project)
   {
-    parent::__construct('lxc-attach -n ' . $project->getName() . ' -- lxc-clone -s -B btrfs ' . escapeshellarg($sourceBranchContainer->getName()) . ' ' . escapeshellarg($newBranchContainer->getName()));
+    parent::__construct('lxc-attach -n ' . $project->getName() . ' -- lxc-clone -s --bdev btrfs ' . escapeshellarg($sourceBranchContainer->getName()) . ' ' . escapeshellarg($newBranchContainer->getName()));
   }
 
 }

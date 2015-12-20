@@ -139,6 +139,11 @@ class Container
   /**
    * @var string|null
    */
+  protected $profileName = null;
+
+  /**
+   * @var string|null
+   */
   protected $downloadHost = null;
 
   /**
@@ -589,6 +594,29 @@ class Container
   public function setState($state)
   {
     $this->state = $state;
+    return $this;
+  }
+
+  /**
+   * Returns the Rainmaker profile name that this container should be provisioned with.
+   *
+   * @return string|null
+   */
+  public function getProfileName()
+  {
+    return $this->profileName;
+  }
+
+  /**
+   * Sets the Rainmaker profile name that this container should be provisioned with.
+   *
+   * @param string $profileName
+   * @return Container
+   */
+  public function setProfileName($profileName)
+  {
+    $this->profileName = $profileName;
+
     return $this;
   }
 

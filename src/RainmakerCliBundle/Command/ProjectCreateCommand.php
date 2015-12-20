@@ -190,6 +190,7 @@ class ProjectCreateCommand extends RainmakerCommand
       ->setDomain($domain)
       ->setHostname($hostname);
     $repository->saveContainer($project);
+    $project->setProfileName($this->getContainer()->getParameter('rainmaker_default_project_profile'));
     $project->setDownloadHost($this->getContainer()->getParameter('rainmaker_download_host'));
     $this->setContainerEntity($project);
 
@@ -201,6 +202,7 @@ class ProjectCreateCommand extends RainmakerCommand
         ->setHostname($branchHostname)
         ->setParentId($project->getId());
       $repository->saveContainer($branch);
+      $branch->setProfileName($this->getContainer()->getParameter('rainmaker_default_project_branch_profile'));
       $branch->setDownloadHost($this->getContainer()->getParameter('rainmaker_download_host'));
       $this->getConfiguredTask()->setBranchContainer($branch);
     }
