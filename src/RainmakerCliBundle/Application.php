@@ -42,9 +42,9 @@ class Application extends ParentApplication {
    */
   protected function registerCommands()
   {
-    if ($this->getKernel()->getEnvironment() != 'prod') {
+    //if ($this->getKernel()->getEnvironment() != 'prod') {
       parent::registerCommands();
-    }
+    //}
   }
 
   /**

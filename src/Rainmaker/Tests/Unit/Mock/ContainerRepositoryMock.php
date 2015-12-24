@@ -14,6 +14,7 @@ class ContainerRepositoryMock extends ContainerRepository
   public $projectContainers = array();
   public $branchContainers = array();
   public $allBranchContainers = array();
+  public $allContainersOrderedByName = array();
   public $allContainersOrderedForHostsInclude = array();
   public $parentContainer = null;
 
@@ -65,6 +66,14 @@ class ContainerRepositoryMock extends ContainerRepository
     return $this->excludeContainersWithStatuses(
       $this->allBranchContainers,
       $this->setDefaultStatusIfEmpty($status)
+    );
+  }
+
+  public function getAllContainersOrderedByName($status = null)
+  {
+    return $this->excludeContainersWithStatuses(
+        $this->allContainersOrderedByName,
+        $this->setDefaultStatusIfEmpty($status)
     );
   }
 

@@ -72,11 +72,53 @@ class StartTest extends AbstractUnitTest
       ->setDnsZoneNegCacheTtl(604800)
       ->setState(Container::STATE_STOPPED)
       ->setProfileName('rainmaker/default-project');
+
+    $json = '
+{
+  "mounts": [
+    {
+      "source": "/var/cache/lxc/rainmaker",
+      "target": "{{container_rootfs}}/var/cache/lxc/rainmaker",
+      "group": "bind"
+    },
+    {
+      "source": "/srv/saltstack",
+      "target": "{{container_rootfs}}/srv/saltstack",
+      "group": "bind"
+    }
+  ],
+  "exports": []
+}
+';
+
+    $container->setProfileMetadata($json);
     return $container;
   }
 
   protected function createDummyProjectBranch()
   {
+    $json = '
+{
+  "mounts": [
+    {
+      "source": "{{container_rootfs}}/var/www/html",
+      "target": "/export/rainmaker/{{container_name}}",
+      "group": "nfs"
+    },
+    {
+      "source": "/srv/saltstack",
+      "target": "{{container_rootfs}}/srv/saltstack",
+      "group": "bind"
+    }
+  ],
+  "exports": [
+    {
+      "source": "/export/rainmaker/{{container_name}}"
+    }
+  ]
+}
+';
+
     $container = new Container();
     $container
       ->setName('test.prod')
@@ -98,6 +140,7 @@ class StartTest extends AbstractUnitTest
       ->setDnsZoneNegCacheTtl(604800)
       ->setState(Container::STATE_STOPPED)
       ->setProfileName('rainmaker/default-branch')
+      ->setProfileMetadata($json)
       ->setParentId(1);
     return $container;
   }
@@ -109,7 +152,8 @@ class StartTest extends AbstractUnitTest
     $repository->projectContainers = $projects;
     $repository->branchContainers = $branches;
     $repository->allBranchContainers = $branches;
-    $repository->allContainersOrderedForHostsInclude = array_merge($projects, $branches);
+    $repository->allContainersOrderedByName = array_merge($projects, $branches);
+    $repository->allContainersOrderedForHostsInclude = $repository->allContainersOrderedByName;
     $repository->parentContainer = $parent;
     return $em;
   }

@@ -72,19 +72,23 @@ class FstabManager extends ComponentManager {
 
   public function checkAndCreateProjectBranchMountPoints()
   {
-    foreach($this->getFstabNfsMounts() as $mount) {
-      if (!$this->getFilesystem()->exists($mount['target'])) {
-        $this->getFilesystem()->mkdir($mount['target']);
+    $repository = $this->getEntityManager()->getRepository('Rainmaker:Container');
+    $mounts = $this->container->getMounts(null, $repository);
+    foreach($mounts as $mount) {
+      if (!$this->getFilesystem()->exists($mount->target)) {
+        $this->getFilesystem()->mkdir($mount->target);
       }
     }
   }
 
   public function removeProjectBranchMountPoints()
   {
-    $mount = $this->getEntityManager()->getRepository('Rainmaker:Container')->
-      getFstabNfsMountPointForContainer($this->container);
-    if ($this->getFilesystem()->exists($mount['target'])) {
-      $this->getFilesystem()->remove($mount['target']);
+    $repository = $this->getEntityManager()->getRepository('Rainmaker:Container');
+    $mounts = $this->container->getMounts(null, $repository);
+    foreach ($mounts as $mount) {
+      if ($this->getFilesystem()->exists($mount->target)) {
+        $this->getFilesystem()->remove($mount->target);
+      }
     }
   }
 
@@ -106,12 +110,13 @@ class FstabManager extends ComponentManager {
    */
   protected function mountProjectFstabEntries()
   {
-    $mounts = $this->container->getFstabToolsMountPoint();
+    $repository = $this->getEntityManager()->getRepository('Rainmaker:Container');
+    $mounts = $this->container->getMounts(null, $repository);
     $this->getProcessRunner();
 
     try {
       foreach ($mounts as $mount) {
-        $process = new FstabMountProcess($mount['target']);
+        $process = new FstabMountProcess($mount->target);
         $this->getProcessRunner()->run($process);
       }
     } catch (ProcessFailedException $e) {
@@ -124,12 +129,13 @@ class FstabManager extends ComponentManager {
    */
   protected function unmountProjectFstabEntries()
   {
-    $mounts = $this->container->getFstabToolsMountPoint();
+    $repository = $this->getEntityManager()->getRepository('Rainmaker:Container');
+    $mounts = $this->container->getMounts(null, $repository);
     $this->getProcessRunner();
 
     try {
       foreach ($mounts as $mount) {
-        $process = new FstabUnmountProcess($mount['target']);
+        $process = new FstabUnmountProcess($mount->target);
         $this->getProcessRunner()->run($process);
       }
     } catch (ProcessFailedException $e) {
@@ -142,12 +148,15 @@ class FstabManager extends ComponentManager {
    */
   protected function mountProjectBranchFstabEntries()
   {
-    $mount = $this->container->getFstabNfsMountPoint();
+    $repository = $this->getEntityManager()->getRepository('Rainmaker:Container');
+    $mounts = $this->container->getMounts(null, $repository);
     $this->getProcessRunner();
 
     try {
-      $process = new FstabMountProcess($mount['target']);
-      $this->getProcessRunner()->run($process);
+      foreach ($mounts as $mount) {
+        $process = new FstabMountProcess($mount->target);
+        $this->getProcessRunner()->run($process);
+      }
     } catch (ProcessFailedException $e) {
       echo $e->getMessage();
     }
@@ -158,12 +167,15 @@ class FstabManager extends ComponentManager {
    */
   protected function unmountProjectBranchFstabEntries()
   {
-    $mount = $this->container->getFstabNfsMountPoint();
+    $repository = $this->getEntityManager()->getRepository('Rainmaker:Container');
+    $mounts = $this->container->getMounts(null, $repository);
     $this->getProcessRunner();
 
     try {
-      $process = new FstabUnmountProcess($mount['target']);
-      $this->getProcessRunner()->run($process);
+      foreach ($mounts as $mount) {
+        $process = new FstabUnmountProcess($mount->target);
+        $this->getProcessRunner()->run($process);
+      }
     } catch (ProcessFailedException $e) {
       echo $e->getMessage();
     }
@@ -176,7 +188,14 @@ class FstabManager extends ComponentManager {
    */
   protected function getFstabToolMounts()
   {
-    return $this->getEntityManager()->getRepository('Rainmaker:Container')->getAllFstabToolsMountPoint();
+    $repository = $this->getEntityManager()->getRepository('Rainmaker:Container');
+    $mounts = array();
+    foreach ($this->getEntityManager()->getRepository('Rainmaker:Container')->getAllContainersOrderedByName() as $container) {
+      foreach ($container->getMounts('bind', $repository) as $mount) {
+        $mounts[] = $mount;
+      }
+    }
+    return $mounts;
   }
 
   /**
@@ -186,7 +205,14 @@ class FstabManager extends ComponentManager {
    */
   protected function getFstabNfsMounts()
   {
-    return $this->getEntityManager()->getRepository('Rainmaker:Container')->getAllFstabNfsMountPoint();
+    $repository = $this->getEntityManager()->getRepository('Rainmaker:Container');
+    $mounts = array();
+    foreach ($this->getEntityManager()->getRepository('Rainmaker:Container')->getAllContainersOrderedByName() as $container) {
+      foreach ($container->getMounts('nfs', $repository) as $mount) {
+        $mounts[] = $mount;
+      }
+    }
+    return $mounts;
   }
 
 }

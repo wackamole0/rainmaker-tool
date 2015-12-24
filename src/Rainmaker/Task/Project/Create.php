@@ -66,6 +66,9 @@ class Create extends TaskWithSubtasks
     $subtasks = array(
       // Bootstrap container
 
+      // Container profile configuration
+      new \Rainmaker\Task\Subtask\ConfigureProjectProfileSettings(),
+
       // Create container
       new \Rainmaker\Task\Subtask\CreateProjectLinuxContainer(),
 

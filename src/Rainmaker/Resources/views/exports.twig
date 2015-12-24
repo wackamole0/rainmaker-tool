@@ -12,5 +12,5 @@
 /export/rainmaker 10.100.0.1(rw,fsid=0,insecure,no_subtree_check,async,all_squash,anonuid=1002,anongid=33)
 #/export/rainmaker/_golden-proj_._golden-branch_ 10.100.0.1(rw,nohide,insecure,no_subtree_check,async,all_squash,anonuid=1002,anongid=33)
 {% for export in exports %}
-{{ export }} 10.100.0.1(rw,nohide,insecure,no_subtree_check,async,all_squash,anonuid=1002,anongid=33)
+{{ export.source }} 10.100.0.1(rw,nohide,insecure,no_subtree_check,async,all_squash,anonuid=1002,anongid=33)
 {% endfor %}

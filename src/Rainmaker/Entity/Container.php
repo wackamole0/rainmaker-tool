@@ -137,9 +137,22 @@ class Container
   protected $state = 0;
 
   /**
+   * @ORM\Column(type="string", length=255, nullable=TRUE)
    * @var string|null
    */
   protected $profileName = null;
+
+  /**
+   * @ORM\Column(type="string", length=10, nullable=TRUE)
+   * @var string|null
+   */
+  protected $profileVersion = null;
+
+  /**
+   * @ORM\Column(type="text")
+   * @var string|null
+   */
+  protected $profileMetadata = '';
 
   /**
    * @var string|null
@@ -621,6 +634,52 @@ class Container
   }
 
   /**
+   * Returns the Rainmaker profile version that this container should be provisioned with.
+   *
+   * @return string|null
+   */
+  public function getProfileVersion()
+  {
+    return $this->profileVersion;
+  }
+
+  /**
+   * Sets the Rainmaker profile version that this container should be provisioned with.
+   *
+   * @param string $profileVersion
+   * @return Container
+   */
+  public function setProfileVersion($profileVersion)
+  {
+    $this->profileVersion = $profileVersion;
+
+    return $this;
+  }
+
+  /**
+   * Returns the metadata of the Rainmaker profile name that this container should be provisioned with.
+   *
+   * @return string|null
+   */
+  public function getProfileMetadata()
+  {
+    return $this->profileMetadata;
+  }
+
+  /**
+   * Sets the metadata of the Rainmaker profile name that this container should be provisioned with.
+   *
+   * @param string $profileMetadata
+   * @return Container
+   */
+  public function setProfileMetadata($profileMetadata)
+  {
+    $this->profileMetadata = $profileMetadata;
+
+    return $this;
+  }
+
+  /**
    * Returns the host the Rainmaker container profiles should be downloaded from.
    *
    * @return string|null
@@ -839,36 +898,74 @@ class Container
 
   /**
    * Returns an array mapping the source and target filesystem locations for this container's
-   * Rainmaker LXC cache.
+   * "bind" mounts.
    *
    * @return array
+   *
+   * @todo This method is named poorly. Think of a better one!
    */
-  public function getFstabToolsMountPoint()
+  public function getFstabToolsMountPoint(ContainerRepository $repository)
   {
-    return array(
-      array(
-        'source' => '/var/cache/lxc/rainmaker',
-        'target' => $this->getLxcRootFs() . '/var/cache/lxc/rainmaker'
-      ),
-      array(
-        'source' => '/srv/saltstack',
-        'target' => $this->getLxcRootFs() . '/srv/saltstack'
-      )
-    );
+    return $this->getMounts('bind', $repository);
   }
 
   /**
    * Returns an array mapping the source and target filesystem locations for this container's
-   * NFS export.
+   * "bind" mounts required by NFS exports.
    *
    * @return array
    */
-  public function getFstabNfsMountPoint()
+  public function getFstabNfsMountPoint(ContainerRepository $repository)
   {
-    return array(
-      'source' => $this->getLxcRootFs() . '/var/www/html',
-      'target' => '/export/rainmaker/' . $this->getName()
-    );
+    return $this->getMounts('nfs', $repository);
+  }
+
+  /**
+   * Returns an array of all the NFS exports specified by the container profile.
+   *
+   * @param ContainerRepository $repository
+   * @return null
+   */
+  public function getNfsExports(ContainerRepository $repository)
+  {
+    $exports = $this->getProfileMetadataParameter('exports', array());
+
+    foreach ($exports as $idx => $export) {
+      $exports[$idx]->source = str_replace('{{container_rootfs}}', $this->getContainerLxcRootFsFullPath($repository), $exports[$idx]->source);
+      $exports[$idx]->source = str_replace('{{container_name}}', $this->getLxcUtsName(), $exports[$idx]->source);
+    }
+    return $exports;
+  }
+
+  /**
+   * Returns an array of all the filesystem mounts specified by the container profile, in order for this container
+   * to function correctly.
+   *
+   * @param null $category
+   * @param ContainerRepository $repository
+   * @return null
+   */
+  public function getMounts($category = null,  ContainerRepository $repository)
+  {
+    $mounts = $this->getProfileMetadataParameter('mounts', array());
+    if (!empty($category)) {
+      foreach ($mounts as $idx => $mount) {
+        if (!isset($mount->group) || $mount->group != $category) {
+          unset($mounts[$idx]);
+          continue;
+        }
+      }
+    }
+
+    foreach ($mounts as $idx => $mount) {
+      $mounts[$idx]->source = str_replace('{{container_rootfs}}', $this->getContainerLxcRootFsFullPath($repository), $mounts[$idx]->source);
+      $mounts[$idx]->source = str_replace('{{container_name}}', $this->getLxcUtsName(), $mounts[$idx]->source);
+
+      $mounts[$idx]->target = str_replace('{{container_rootfs}}', $this->getContainerLxcRootFsFullPath($repository), $mounts[$idx]->target);
+      $mounts[$idx]->target = str_replace('{{container_name}}', $this->getLxcUtsName(), $mounts[$idx]->target);
+    }
+
+    return $mounts;
   }
 
   /**
@@ -878,6 +975,53 @@ class Container
    */
   public function isRunning() {
     return $this->getState() == static::STATE_RUNNING;
+  }
+
+  /**
+   * Returns the specified parameter from the profile metadata that this container uses. If the parameter does not
+   * exist then the specified default value will be returned or null if no default value is specified.
+   *
+   * @param $parameterName
+   * @param null $defaultValue
+   * @return null
+   */
+  public function getProfileMetadataParameter($parameterName, $defaultValue = null)
+  {
+    $metadata = $this->getDecodedProfileMetadata();
+    if (!property_exists($metadata, $parameterName)) {
+      return $defaultValue;
+    }
+
+    return $metadata->$parameterName;
+  }
+
+  /**
+   * Returns the JSON decoded profile metadata that this container uses.
+   */
+  public function getDecodedProfileMetadata()
+  {
+    $metadata = $this->getProfileMetadata();
+    if (empty($metadata)) {
+      return new \stdClass();
+    }
+
+    return json_decode($metadata);
+  }
+
+  /**
+   * Returns the full filesystem path to a project or branch container's root filesystem.
+   *
+   * @param ContainerRepository $repository
+   * @return string
+   */
+  public function getContainerLxcRootFsFullPath(ContainerRepository $repository)
+  {
+    if ($this->isProjectBranch()) {
+      $project = $repository->getParentContainer($this);
+      return $project->getLxcRootFs() . DIRECTORY_SEPARATOR . ltrim($this->getLxcRootFs(), DIRECTORY_SEPARATOR);
+    }
+
+    return $this->getLxcRootFs();
   }
 
 }

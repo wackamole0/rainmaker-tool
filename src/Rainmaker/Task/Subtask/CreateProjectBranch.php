@@ -38,6 +38,9 @@ class CreateProjectBranch extends TaskWithSubtasks
     $subtasks = array(
       // Bootstrap container
 
+      // Container profile configuration
+      new \Rainmaker\Task\Subtask\ConfigureProjectBranchProfileSettings(),
+
       // Create container
       new \Rainmaker\Task\Subtask\CreateProjectBranchLinuxContainer(),
 

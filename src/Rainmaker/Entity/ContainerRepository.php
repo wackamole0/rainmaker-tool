@@ -170,6 +170,22 @@ class ContainerRepository extends EntityRepository
   }
 
   /**
+   * Returns an array of containers ordered by name.
+   *
+   * @return Container[]
+   */
+  public function getAllContainersOrderedByName($status = null)
+  {
+    $status = $this->setDefaultStatusIfEmpty($status);
+    $qb = $this->createQueryBuilder('c');
+    return $qb
+        ->andWhere($qb->expr()->notIn('c.state', ':status'))->setParameter(':status', $status)
+        ->orderBy('c.name', 'ASC')
+        ->getQuery()
+        ->getResult();
+  }
+
+  /**
    * Returns a list of container states of containers that should be excluded from containers sets.
    * If $status is null then the default list of states ("Pending Provision" and "Destroying")
    * is returned. In all other cases $status if returned unmodified.
@@ -438,103 +454,6 @@ class ContainerRepository extends EntityRepository
     }
 
     return $records;
-  }
-
-  // Fstab methods
-
-  /**
-   * Returns an array of containers requiring Rainmaker LXC cache fstab entries.
-   *
-   * @return Container[]
-   */
-  public function getAllContainersOrderedForFstabToolMounts()
-  {
-    return $this->getProjectParentContainers();
-  }
-
-  /**
-   * Returns an array of containers requiring export via the NFS service.
-   *
-   * @return Container[]
-   */
-  public function getAllContainersOrderedForFstabNfsMounts()
-  {
-    return $this->getAllProjectBranchContainers();
-  }
-
-  /**
-   * Returns an array of all the mount points which mount the Rainmaker LXC cache.
-   *
-   * @return array
-   */
-  public function getAllFstabToolsMountPoint()
-  {
-    $mounts = array();
-    foreach ($this->getAllContainersOrderedForFstabToolMounts() as $container) {
-      foreach ($this->getFstabToolsMountPointForContainer($container) as $mount) {
-        $mounts[] = $mount;
-      }
-    }
-    return $mounts;
-  }
-
-  /**
-   * Returns an array of all the mount points for the NFS exports.
-   *
-   * @return array
-   */
-  public function getAllFstabNfsMountPoint()
-  {
-    $mounts = array();
-    foreach ($this->getAllContainersOrderedForFstabNfsMounts() as $container) {
-      $mounts[] = $this->getFstabNfsMountPointForContainer($container);
-    }
-    return $mounts;
-  }
-
-  /**
-   * Returns an array mapping the source and target filesystem locations for the given container's
-   * Rainmaker LXC cache.
-   *
-   * @param Container $container
-   * @return array|null
-   */
-  public function getFstabToolsMountPointForContainer(Container $container)
-  {
-    if ($container->isProjectBranch()) {
-      return null;
-    }
-
-    return array(
-      array(
-        'source' => '/var/cache/lxc/rainmaker',
-        'target' => $container->getLxcRootFs() . '/var/cache/lxc/rainmaker'
-      ),
-      array(
-        'source' => '/srv/saltstack',
-        'target' => $container->getLxcRootFs() . '/srv/saltstack'
-      )
-    );
-  }
-
-  /**
-   * Returns an array mapping the source and target filesystem locations for the given container's
-   * NFS export.
-   *
-   * @param Container $container
-   * @return array|null
-   */
-  public function getFstabNfsMountPointForContainer(Container $container)
-  {
-    if ($container->isProject()) {
-      return null;
-    }
-
-    $project = $this->getParentContainer($container);
-    return array(
-      'source' => $project->getLxcRootFs() . '/var/lib/lxc/' .  $container->getName() . '/rootfs/var/www/html',
-      'target' => '/export/rainmaker/' . $container->getName()
-    );
   }
 
   // Utility methods

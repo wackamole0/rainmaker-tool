@@ -47,10 +47,13 @@ class NfsManager extends ComponentManager {
   protected function getExports()
   {
     $exports = array();
-    $branches = $this->getEntityManager()->getRepository('Rainmaker:Container')->getAllProjectBranchContainers();
+    $repository = $this->getEntityManager()->getRepository('Rainmaker:Container');
+    $containers = $repository->getAllContainersOrderedByName();
 
-    foreach ($branches as $branch) {
-      $exports[] = '/export/rainmaker/' . $branch->getName();
+    foreach ($containers as $container) {
+      foreach ($container->getNfsExports($repository) as $export) {
+        $exports[] = $export;
+      }
     }
 
     return $exports;

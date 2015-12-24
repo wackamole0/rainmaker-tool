@@ -38,6 +38,9 @@ class CreateClone extends TaskWithSubtasks
     $subtasks = array(
       // Bootstrap container
 
+      // Container profile configuration
+      new \Rainmaker\Task\Subtask\ConfigureProjectBranchCloneProfileSettings(),
+
       // Create container
       new \Rainmaker\Task\Subtask\CloneProjectBranchLinuxContainer(),
 
