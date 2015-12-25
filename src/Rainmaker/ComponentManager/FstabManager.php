@@ -97,12 +97,20 @@ class FstabManager extends ComponentManager {
    */
   protected function writeFstab()
   {
-    $config = Template::render('fstab.twig', array(
+    $mounts = Template::render('fstab.twig', array(
       'fstabToolMounts' => $this->getFstabToolMounts(),
       'fstabNfsMounts' => $this->getFstabNfsMounts()
     ));
 
-    $this->getFilesystem()->putFileContents('/etc/fstab', $config);
+    $fstab = $this->getFilesystem()->getFileContents('/etc/fstab');
+    $startMarker = '# Rainmaker - Start #';
+    $endMarker = '# Rainmaker - End #';
+    $count = 0;
+    $fstab = preg_replace("/$startMarker(?:.+)$endMarker/s", $mounts, $fstab, -1, $count);
+    if ($count < 1) {
+      $fstab .= "\n$mounts\n";
+    }
+    $this->getFilesystem()->putFileContents('/etc/fstab', $fstab);
   }
 
   /**

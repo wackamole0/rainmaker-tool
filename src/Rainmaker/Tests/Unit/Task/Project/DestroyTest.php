@@ -47,7 +47,12 @@ class DestroyTest extends AbstractUnitTest
     $filesystemMock->touch('/var/lib/lxc/services/rootfs/etc/bind/db.rainmaker/db.' . $project->networkPrefix());
     $filesystemMock->touch('/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.class.conf.d/localdev.test.conf');
     $filesystemMock->touch('/var/lib/lxc/services/rootfs/etc/dhcp/dhcpd.host.conf.d/localdev.test.cluster.conf');
-    $filesystemMock->putFileContents('/etc/fstab', '');
+
+    $startMarker = '# Rainmaker - Start #';
+    $endMarker = '# Rainmaker - End #';
+    $fstab = $filesystemMock->getFileContents('/etc/fstab');
+    $fstab = preg_replace("/$startMarker(?:.+)$endMarker/s", "$startMarker\n$endMarker", $fstab);
+    $filesystemMock->putFileContents('/etc/fstab', $fstab);
 
     $task->performTask();
 

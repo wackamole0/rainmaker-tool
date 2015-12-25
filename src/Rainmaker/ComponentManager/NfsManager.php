@@ -34,11 +34,19 @@ class NfsManager extends ComponentManager {
    */
   protected function writeExportsFile()
   {
-    $config = Template::render('exports.twig', array(
+    $exports = Template::render('exports.twig', array(
       'exports' => $this->getExports()
     ));
 
-    $this->getFilesystem()->putFileContents('/etc/exports', $config);
+    $exportsFile = $this->getFilesystem()->getFileContents('/etc/exports');
+    $startMarker = '# Rainmaker - Start #';
+    $endMarker = '# Rainmaker - End #';
+    $count = 0;
+    $exportsFile = preg_replace("/$startMarker(?:.+)$endMarker/s", $exports, $exportsFile, -1, $count);
+    if ($count < 1) {
+      $exportsFile .= "\n$exports\n";
+    }
+    $this->getFilesystem()->putFileContents('/etc/exports', $exportsFile);
   }
 
   /**
