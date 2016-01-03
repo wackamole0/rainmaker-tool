@@ -11,11 +11,12 @@ use Rainmaker\Entity\Container;
  * @package Rainmaker\Process\Lxc
  * @return void
  */
-class StopProjectContainerProcess extends Process {
+class StopProjectContainerProcess extends Process
+{
 
-  public function __construct(Container $container)
-  {
-    parent::__construct('lxc-stop -n ' . $container->getName());
-  }
+    public function __construct(Container $container)
+    {
+        parent::__construct('lxc-stop -n ' . $container->getName());
+    }
 
 }

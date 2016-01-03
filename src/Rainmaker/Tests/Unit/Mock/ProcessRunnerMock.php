@@ -11,28 +11,29 @@ use Symfony\Component\Process\Process;
  *
  * @package Rainmaker\Tests\Unit\Mock
  */
-class ProcessRunnerMock extends ProcessRunner {
+class ProcessRunnerMock extends ProcessRunner
+{
 
-  protected $processOutput = array();
+    protected $processOutput = array();
 
-  public function run(Process $process, $returnOutput = true)
-  {
-    if ($returnOutput) {
-      return $this->getProcessOutput($process);
+    public function run(Process $process, $returnOutput = true)
+    {
+        if ($returnOutput) {
+            return $this->getProcessOutput($process);
+        }
     }
-  }
 
-  public function getProcessOutput(Process $process)
-  {
-    $class = get_class($process);
-    if (isset($this->processOutput[$class])) {
-      return $this->processOutput[$class];
+    public function getProcessOutput(Process $process)
+    {
+        $class = get_class($process);
+        if (isset($this->processOutput[$class])) {
+            return $this->processOutput[$class];
+        }
     }
-  }
 
-  public function addProcessOutput($class, $output)
-  {
-    $this->processOutput[$class] = $output;
-  }
+    public function addProcessOutput($class, $output)
+    {
+        $this->processOutput[$class] = $output;
+    }
 
 }

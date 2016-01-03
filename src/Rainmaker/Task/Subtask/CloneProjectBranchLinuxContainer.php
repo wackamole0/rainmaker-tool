@@ -13,12 +13,12 @@ use Rainmaker\ComponentManager\LxcManager;
 class CloneProjectBranchLinuxContainer extends Task
 {
 
-  public function performTask()
-  {
-    $this->log(\Monolog\Logger::DEBUG, 'Cloning container');
+    public function performTask()
+    {
+        $this->log(\Monolog\Logger::DEBUG, 'Cloning container');
 
-    $lxc = new LxcManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
-    $lxc->cloneProjectBranchContainer($this->getContainer(), $this->getContainer()->getCloneSource());
-  }
+        $lxc = new LxcManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
+        $lxc->cloneProjectBranchContainer($this->getContainer(), $this->getContainer()->getCloneSource());
+    }
 
 }

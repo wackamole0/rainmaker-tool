@@ -54,20 +54,20 @@ class TaskLogFormatter extends NormalizerFormatter
         if ($previous = $e->getPrevious()) {
             do {
                 $previousText .= ",\n" . get_class($previous) .
-                  '(code: '.$previous->getCode() . '): ' .
-                  $previous->getMessage() .
-                  ' at ' . $previous->getFile() .
-                  ':' . $previous->getLine();
+                    '(code: ' . $previous->getCode() . '): ' .
+                    $previous->getMessage() .
+                    ' at ' . $previous->getFile() .
+                    ':' . $previous->getLine();
             } while ($previous = $previous->getPrevious());
         }
 
-        $str = '[object] ('.get_class($e) .
-          '(code: ' . $e->getCode() . '): ' .
-          $e->getMessage() .
-          ' at ' . $e->getFile() .
-          ':' . $e->getLine() .
-          "'\n" . $previousText . ')';
-        $str .= "\n[stacktrace]\n".$e->getTraceAsString();
+        $str = '[object] (' . get_class($e) .
+            '(code: ' . $e->getCode() . '): ' .
+            $e->getMessage() .
+            ' at ' . $e->getFile() .
+            ':' . $e->getLine() .
+            "'\n" . $previousText . ')';
+        $str .= "\n[stacktrace]\n" . $e->getTraceAsString();
 
         $str = $this->indentNewlines($str);
 
@@ -81,7 +81,7 @@ class TaskLogFormatter extends NormalizerFormatter
         }
 
         if (is_scalar($data)) {
-            return (string) $data;
+            return (string)$data;
         }
 
         if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
@@ -94,9 +94,9 @@ class TaskLogFormatter extends NormalizerFormatter
     protected function indentNewlines($str)
     {
         return strtr($str, array(
-          "\r\n"    => str_repeat(' ', static::NEWLINE_INDENT_LENGTH),
-          "\r"      => str_repeat(' ', static::NEWLINE_INDENT_LENGTH),
-          "\n"      => str_repeat(' ', static::NEWLINE_INDENT_LENGTH)
+            "\r\n" => str_repeat(' ', static::NEWLINE_INDENT_LENGTH),
+            "\r" => str_repeat(' ', static::NEWLINE_INDENT_LENGTH),
+            "\n" => str_repeat(' ', static::NEWLINE_INDENT_LENGTH)
         ));
     }
 }

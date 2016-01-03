@@ -12,13 +12,13 @@ use Rainmaker\Task\TaskWithSubtasks;
 class ExceptionTaskWithSubtasksFake extends TaskWithSubtasks
 {
 
-  public function getSubtasks()
-  {
-    return array(
-      new TaskFake(),
-      new ExceptionTaskFake(),
-      new TaskFake()
-    );
-  }
+    public function getSubtasks()
+    {
+        return array(
+            new TaskFake(),
+            new ExceptionTaskFake(),
+            new TaskFake()
+        );
+    }
 
 }

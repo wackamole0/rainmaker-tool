@@ -13,10 +13,10 @@ use Rainmaker\ComponentManager\NfsManager;
 class AddProjectBranchNfsEntries extends Task
 {
 
-  public function performTask()
-  {
-    $fstab = new NfsManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
-    $fstab->createProjectBranchEntries($this->getContainer(), true);
-  }
+    public function performTask()
+    {
+        $fstab = new NfsManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
+        $fstab->createProjectBranchEntries($this->getContainer(), true);
+    }
 
 }

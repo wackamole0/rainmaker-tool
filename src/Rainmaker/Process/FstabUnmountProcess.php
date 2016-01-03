@@ -10,11 +10,12 @@ use Symfony\Component\Process\Process;
  * @package Rainmaker\Process
  * @return void
  */
-class FstabUnmountProcess extends Process {
+class FstabUnmountProcess extends Process
+{
 
-  public function __construct($target)
-  {
-    parent::__construct('umount ' . $target);
-  }
+    public function __construct($target)
+    {
+        parent::__construct('umount ' . $target);
+    }
 
 }

@@ -11,12 +11,13 @@ use Rainmaker\Entity\Container;
  * @package Rainmaker\Process\Lxc
  * @return void
  */
-class DestroyProjectBranchContainerProcess extends Process {
+class DestroyProjectBranchContainerProcess extends Process
+{
 
-  public function __construct(Container $branch, Container $project)
-  {
-    $cmd = 'lxc-attach -n ' . $project->getName() . ' -- lxc-destroy --name ' . escapeshellarg($branch->getName());
-    parent::__construct($cmd);
-  }
+    public function __construct(Container $branch, Container $project)
+    {
+        $cmd = 'lxc-attach -n ' . $project->getName() . ' -- lxc-destroy --name ' . escapeshellarg($branch->getName());
+        parent::__construct($cmd);
+    }
 
 }

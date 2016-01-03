@@ -13,12 +13,12 @@ use Rainmaker\ComponentManager\LxcManager;
 class ConfigureProjectBranchLinuxContainer extends Task
 {
 
-  public function performTask()
-  {
-    $this->log(\Monolog\Logger::DEBUG, 'Configuring container');
+    public function performTask()
+    {
+        $this->log(\Monolog\Logger::DEBUG, 'Configuring container');
 
-    $lxc = new LxcManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
-    $lxc->configureProjectBranchContainer($this->getContainer());
-  }
+        $lxc = new LxcManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
+        $lxc->configureProjectBranchContainer($this->getContainer());
+    }
 
 }

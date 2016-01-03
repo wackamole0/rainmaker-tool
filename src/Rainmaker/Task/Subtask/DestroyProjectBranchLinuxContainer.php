@@ -13,12 +13,12 @@ use Rainmaker\ComponentManager\LxcManager;
 class DestroyProjectBranchLinuxContainer extends Task
 {
 
-  public function performTask()
-  {
-    $this->log(\Monolog\Logger::DEBUG, 'Destroying container');
+    public function performTask()
+    {
+        $this->log(\Monolog\Logger::DEBUG, 'Destroying container');
 
-    $lxc = new LxcManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
-    $lxc->destroyProjectBranchContainer($this->getContainer());
-  }
+        $lxc = new LxcManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
+        $lxc->destroyProjectBranchContainer($this->getContainer());
+    }
 
 }

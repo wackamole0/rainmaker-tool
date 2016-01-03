@@ -14,7 +14,8 @@ use Rainmaker\Entity\Container;
  *
  * @package Rainmaker\ComponentManager
  */
-class RainmakerProfileManager extends ComponentManager {
+class RainmakerProfileManager extends ComponentManager
+{
 
     public function configureProjectProfileSettings(Container $container)
     {

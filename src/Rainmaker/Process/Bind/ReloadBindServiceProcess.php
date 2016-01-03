@@ -10,11 +10,12 @@ use Symfony\Component\Process\Process;
  * @package Rainmaker\Process\Bind
  * @return void
  */
-class ReloadBindServiceProcess extends Process {
+class ReloadBindServiceProcess extends Process
+{
 
-  public function __construct()
-  {
-    parent::__construct('lxc-attach -n services -- service bind9 reload');
-  }
+    public function __construct()
+    {
+        parent::__construct('lxc-attach -n services -- service bind9 reload');
+    }
 
 }

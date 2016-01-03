@@ -13,10 +13,10 @@ use Rainmaker\ComponentManager\FstabManager;
 class AddProjectBranchFstabEntries extends Task
 {
 
-  public function performTask()
-  {
-    $fstab = new FstabManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
-    $fstab->createProjectBranchFstabEntries($this->getContainer(), true);
-  }
+    public function performTask()
+    {
+        $fstab = new FstabManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
+        $fstab->createProjectBranchFstabEntries($this->getContainer(), true);
+    }
 
 }

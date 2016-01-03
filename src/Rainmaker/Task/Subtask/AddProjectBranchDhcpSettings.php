@@ -13,10 +13,10 @@ use Rainmaker\ComponentManager\DhcpManager;
 class AddProjectBranchDhcpSettings extends Task
 {
 
-  public function performTask()
-  {
-    $dhcp = new DhcpManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
-    $dhcp->createProjectBranchDhcpSettings($this->getContainer(), true);
-  }
+    public function performTask()
+    {
+        $dhcp = new DhcpManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
+        $dhcp->createProjectBranchDhcpSettings($this->getContainer(), true);
+    }
 
 }

@@ -10,11 +10,12 @@ use Symfony\Component\Process\Process;
  * @package Rainmaker\Process\Nfs
  * @return void
  */
-class ReloadNfsServiceProcess extends Process {
+class ReloadNfsServiceProcess extends Process
+{
 
-  public function __construct()
-  {
-    parent::__construct('service nfs-kernel-server reload');
-  }
+    public function __construct()
+    {
+        parent::__construct('service nfs-kernel-server reload');
+    }
 
 }

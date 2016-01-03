@@ -8,25 +8,26 @@ namespace Rainmaker\Util;
  *
  * @package Rainmaker\Util
  */
-class Filesystem extends \Symfony\Component\Filesystem\Filesystem {
+class Filesystem extends \Symfony\Component\Filesystem\Filesystem
+{
 
-  /**
-   * @param string $file
-   * @return string
-   */
-  public function getFileContents($file)
-  {
-    return file_get_contents($file);
-  }
+    /**
+     * @param string $file
+     * @return string
+     */
+    public function getFileContents($file)
+    {
+        return file_get_contents($file);
+    }
 
-  /**
-   * @param string $file
-   * @param string $contents
-   * @return int The function returns the number of bytes that were written to the file, or false on failure.
-   */
-  public function putFileContents($file, $contents)
-  {
-    return file_put_contents($file, $contents);
-  }
+    /**
+     * @param string $file
+     * @param string $contents
+     * @return int The function returns the number of bytes that were written to the file, or false on failure.
+     */
+    public function putFileContents($file, $contents)
+    {
+        return file_put_contents($file, $contents);
+    }
 
 }

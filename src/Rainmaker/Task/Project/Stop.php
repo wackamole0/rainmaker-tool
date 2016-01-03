@@ -10,16 +10,17 @@ use Rainmaker\ComponentManager\LxcManager;
  *
  * @package Rainmaker\Task\Project
  */
-class Stop extends Task {
+class Stop extends Task
+{
 
-  protected $list = '';
+    protected $list = '';
 
-  public function performTask()
-  {
-    $this->log(\Monolog\Logger::DEBUG, 'Stopping container [' . $this->getContainer()->getName() . ']');
+    public function performTask()
+    {
+        $this->log(\Monolog\Logger::DEBUG, 'Stopping container [' . $this->getContainer()->getName() . ']');
 
-    $lxc = new LxcManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
-    $lxc->stopProjectContainer($this->getContainer());
-  }
+        $lxc = new LxcManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
+        $lxc->stopProjectContainer($this->getContainer());
+    }
 
 }

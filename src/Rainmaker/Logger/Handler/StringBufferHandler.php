@@ -21,6 +21,6 @@ class StringBufferHandler extends AbstractProcessingHandler
      */
     protected function write(array $record)
     {
-        $this->buffer .= (string) $record['formatted'];
+        $this->buffer .= (string)$record['formatted'];
     }
 }

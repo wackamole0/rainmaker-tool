@@ -10,11 +10,12 @@ use Symfony\Component\Process\Process;
  * @package Rainmaker\Process\Dhcp
  * @return void
  */
-class ReloadDhcpServiceProcess extends Process {
+class ReloadDhcpServiceProcess extends Process
+{
 
-  public function __construct()
-  {
-    parent::__construct('lxc-attach -n services -- service isc-dhcp-server restart');
-  }
+    public function __construct()
+    {
+        parent::__construct('lxc-attach -n services -- service isc-dhcp-server restart');
+    }
 
 }

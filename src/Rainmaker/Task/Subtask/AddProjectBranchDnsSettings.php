@@ -13,10 +13,10 @@ use Rainmaker\ComponentManager\BindManager;
 class AddProjectBranchDnsSettings extends Task
 {
 
-  public function performTask()
-  {
-    $dns = new BindManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
-    $dns->configureDnsZoneForProjectBranchContainer($this->getContainer(), true);
-  }
+    public function performTask()
+    {
+        $dns = new BindManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
+        $dns->configureDnsZoneForProjectBranchContainer($this->getContainer(), true);
+    }
 
 }

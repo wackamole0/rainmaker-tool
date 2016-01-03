@@ -17,44 +17,44 @@ use Rainmaker\Logger\TaskLogger;
 class ListTest extends AbstractIntegrationTest
 {
 
-  public function testList()
-  {
-    $task = new ProjectList();
-    $task->setLogger($this->createLogger())
-      ->setEntityManager($this->em)
-      ->setProcessRunner($this->createProcessRunnerMock())
-      ->setFilesystem($this->createFilesystemMock());
-    $task->performTask();
+    public function testList()
+    {
+        $task = new ProjectList();
+        $task->setLogger($this->createLogger())
+            ->setEntityManager($this->em)
+            ->setProcessRunner($this->createProcessRunnerMock())
+            ->setFilesystem($this->createFilesystemMock());
+        $task->performTask();
 
-    $this->assertEquals(file_get_contents($this->getPathToTestAcceptanceFilesDirectory() . '/project-list.txt'),
-      $task->getList());
-  }
-
-
-  // Utility methods
+        $this->assertEquals(file_get_contents($this->getPathToTestAcceptanceFilesDirectory() . '/project-list.txt'),
+            $task->getList());
+    }
 
 
-  protected function getPathToTestAcceptanceFilesDirectory()
-  {
-    return $this->getPathToTestAcceptanceFilesBaseDirectory() . '/integration/project/list';
-  }
+    // Utility methods
 
-  protected function createProcessRunnerMock()
-  {
-    return new ProcessRunnerMock();
-  }
 
-  protected function createFilesystemMock()
-  {
-    $fs = new FilesystemMock();
-    $fs->copyFromFileSystem(__DIR__ . '/../../../fsMocks');
+    protected function getPathToTestAcceptanceFilesDirectory()
+    {
+        return $this->getPathToTestAcceptanceFilesBaseDirectory() . '/integration/project/list';
+    }
 
-    return $fs;
-  }
+    protected function createProcessRunnerMock()
+    {
+        return new ProcessRunnerMock();
+    }
 
-  protected function createLogger()
-  {
-    return new TaskLogger('testLogger');
-  }
+    protected function createFilesystemMock()
+    {
+        $fs = new FilesystemMock();
+        $fs->copyFromFileSystem(__DIR__ . '/../../../fsMocks');
+
+        return $fs;
+    }
+
+    protected function createLogger()
+    {
+        return new TaskLogger('testLogger');
+    }
 
 }

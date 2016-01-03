@@ -12,9 +12,9 @@ use Rainmaker\Task\Task;
 class TaskFake extends Task
 {
 
-  public function performTask()
-  {
-    // Nop
-  }
+    public function performTask()
+    {
+        // Nop
+    }
 
 }

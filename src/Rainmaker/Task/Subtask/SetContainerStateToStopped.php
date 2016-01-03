@@ -13,10 +13,10 @@ use Rainmaker\Entity\Container;
 class SetContainerStateToStopped extends Task
 {
 
-  public function performTask()
-  {
-    $this->getContainer()->setState(Container::STATE_STOPPED);
-    $this->getEntityManager()->getRepository('Rainmaker:Container')->saveContainer($this->getContainer());
-  }
+    public function performTask()
+    {
+        $this->getContainer()->setState(Container::STATE_STOPPED);
+        $this->getEntityManager()->getRepository('Rainmaker:Container')->saveContainer($this->getContainer());
+    }
 
 }

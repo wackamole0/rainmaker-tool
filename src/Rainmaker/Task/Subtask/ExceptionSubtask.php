@@ -7,9 +7,9 @@ use Rainmaker\RainmakerException;
 class ExceptionSubtask extends Subtask
 {
 
-  public function performSubtask()
-  {
-    throw new RainmakerException('Something bad');
-  }
+    public function performSubtask()
+    {
+        throw new RainmakerException('Something bad');
+    }
 
 }

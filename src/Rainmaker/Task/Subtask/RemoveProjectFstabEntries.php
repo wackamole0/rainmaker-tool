@@ -13,10 +13,10 @@ use Rainmaker\ComponentManager\FstabManager;
 class RemoveProjectFstabEntries extends Task
 {
 
-  public function performTask()
-  {
-    $fstab = new FstabManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
-    $fstab->removeProjectFstabEntries($this->getContainer());
-  }
+    public function performTask()
+    {
+        $fstab = new FstabManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
+        $fstab->removeProjectFstabEntries($this->getContainer());
+    }
 
 }

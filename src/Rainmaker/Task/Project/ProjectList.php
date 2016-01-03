@@ -9,34 +9,35 @@ use Rainmaker\Task\Task;
  *
  * @package Rainmaker\Task
  */
-class ProjectList extends Task {
+class ProjectList extends Task
+{
 
-  protected $list = '';
+    protected $list = '';
 
-  public function performTask()
-  {
-    $columnWidthId = 30;
-    $columnWidthStatus = 15;
-    $containerRepo = $this->getEntityManager()->getRepository('Rainmaker:Container');
+    public function performTask()
+    {
+        $columnWidthId = 30;
+        $columnWidthStatus = 15;
+        $containerRepo = $this->getEntityManager()->getRepository('Rainmaker:Container');
 
-    $list = array();
-    $list[] = '+-' . str_repeat('-', $columnWidthId) . '-+-' . str_repeat('-', $columnWidthStatus) . '-+';
-    $list[] = '| ' . str_pad('ID', $columnWidthId, ' ') . ' | ' . str_pad('Status', $columnWidthStatus, ' ') . ' |';
-    $list[] = '+-' . str_repeat('-', $columnWidthId) . '-+-' . str_repeat('-', $columnWidthStatus) . '-+';
-    foreach ($containerRepo->getProjectParentContainers() as $project) {
-      $list[] = '| ' . str_pad($project->getName(), $columnWidthId, ' ') . ' | ' . str_pad($project->getStatusText(), $columnWidthStatus, ' ') . ' |';
-      foreach ($containerRepo->getProjectBranchContainers($project) as $branch) {
-        $list[] = '| ' . str_pad(' \_ ' . $branch->getName(), $columnWidthId, ' ') . ' | ' . str_pad($branch->getStatusText(), $columnWidthStatus, ' ') . ' |';
-      }
+        $list = array();
+        $list[] = '+-' . str_repeat('-', $columnWidthId) . '-+-' . str_repeat('-', $columnWidthStatus) . '-+';
+        $list[] = '| ' . str_pad('ID', $columnWidthId, ' ') . ' | ' . str_pad('Status', $columnWidthStatus, ' ') . ' |';
+        $list[] = '+-' . str_repeat('-', $columnWidthId) . '-+-' . str_repeat('-', $columnWidthStatus) . '-+';
+        foreach ($containerRepo->getProjectParentContainers() as $project) {
+            $list[] = '| ' . str_pad($project->getName(), $columnWidthId, ' ') . ' | ' . str_pad($project->getStatusText(), $columnWidthStatus, ' ') . ' |';
+            foreach ($containerRepo->getProjectBranchContainers($project) as $branch) {
+                $list[] = '| ' . str_pad(' \_ ' . $branch->getName(), $columnWidthId, ' ') . ' | ' . str_pad($branch->getStatusText(), $columnWidthStatus, ' ') . ' |';
+            }
+        }
+        $list[] = '+-' . str_repeat('-', $columnWidthId) . '-+-' . str_repeat('-', $columnWidthStatus) . '-+';
+
+        $this->list = implode("\n", $list);
     }
-    $list[] = '+-' . str_repeat('-', $columnWidthId) . '-+-' . str_repeat('-', $columnWidthStatus) . '-+';
 
-    $this->list = implode("\n", $list);
-  }
-
-  public function getList()
-  {
-    return $this->list;
-  }
+    public function getList()
+    {
+        return $this->list;
+    }
 
 }

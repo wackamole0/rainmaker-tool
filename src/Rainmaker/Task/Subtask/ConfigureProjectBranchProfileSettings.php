@@ -13,10 +13,10 @@ use Rainmaker\ComponentManager\RainmakerProfileManager;
 class ConfigureProjectBranchProfileSettings extends Task
 {
 
-  public function performTask()
-  {
-    $manager = new RainmakerProfileManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
-    $manager->configureProjectBranchProfileSettings($this->getContainer());
-  }
+    public function performTask()
+    {
+        $manager = new RainmakerProfileManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
+        $manager->configureProjectBranchProfileSettings($this->getContainer());
+    }
 
 }

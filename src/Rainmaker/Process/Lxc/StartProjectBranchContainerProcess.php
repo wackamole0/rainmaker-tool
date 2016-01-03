@@ -11,11 +11,12 @@ use Rainmaker\Entity\Container;
  * @package Rainmaker\Process\Lxc
  * @return void
  */
-class StartProjectBranchContainerProcess extends Process {
+class StartProjectBranchContainerProcess extends Process
+{
 
-  public function __construct(Container $branch, Container $project)
-  {
-    parent::__construct('lxc-attach -n ' . $project->getName() . ' -- lxc-start -d -n ' . $branch->getName());
-  }
+    public function __construct(Container $branch, Container $project)
+    {
+        parent::__construct('lxc-attach -n ' . $project->getName() . ' -- lxc-start -d -n ' . $branch->getName());
+    }
 
 }

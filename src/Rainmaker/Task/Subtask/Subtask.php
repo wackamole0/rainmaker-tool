@@ -5,41 +5,42 @@ namespace Rainmaker\Task\Subtask;
 abstract class Subtask
 {
 
-  protected $output = NULL;
+    protected $output = NULL;
 
-  protected $container = NULL;
+    protected $container = NULL;
 
-  public function getOutputInterface()
-  {
-    return $this->output;
-  }
+    public function getOutputInterface()
+    {
+        return $this->output;
+    }
 
-  public function setOutputInterface($output)
-  {
-    $this->output = $output;
+    public function setOutputInterface($output)
+    {
+        $this->output = $output;
 
-    return $this;
-  }
+        return $this;
+    }
 
-  public function getContainer()
-  {
-    return $this->container;
-  }
+    public function getContainer()
+    {
+        return $this->container;
+    }
 
-  public function setContainer($container)
-  {
-    $this->container = $container;
+    public function setContainer($container)
+    {
+        $this->container = $container;
 
-    return $this;
-  }
+        return $this;
+    }
 
-  public function performSubtask()
-  {
-    throw new \LogicException('You must override the performSubtask() method in the concrete command class.');
-  }
+    public function performSubtask()
+    {
+        throw new \LogicException('You must override the performSubtask() method in the concrete command class.');
+    }
 
-  public function performCleanup() {
-    ;
-  }
+    public function performCleanup()
+    {
+        ;
+    }
 
 }

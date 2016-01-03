@@ -13,9 +13,9 @@ use Rainmaker\RainmakerException;
 class ExceptionTaskFake extends Task
 {
 
-  public function performTask()
-  {
-    throw new RainmakerException();
-  }
+    public function performTask()
+    {
+        throw new RainmakerException();
+    }
 
 }

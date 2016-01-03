@@ -13,10 +13,10 @@ use Rainmaker\ComponentManager\LxcManager;
 class StartLinuxContainer extends Task
 {
 
-  public function performTask()
-  {
-    $lxc = new LxcManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
-    $lxc->startContainer($this->getContainer());
-  }
+    public function performTask()
+    {
+        $lxc = new LxcManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
+        $lxc->startContainer($this->getContainer());
+    }
 
 }

@@ -15,5 +15,4 @@ class RainmakerQuestionHelper extends QuestionHelper
 {
 
 
-
 }

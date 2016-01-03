@@ -13,10 +13,10 @@ use Rainmaker\ComponentManager\DhcpManager;
 class RemoveProjectDhcpSettings extends Task
 {
 
-  public function performTask()
-  {
-    $dhcp = new DhcpManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
-    $dhcp->removeProjectDhcpSettings($this->getContainer(), true);
-  }
+    public function performTask()
+    {
+        $dhcp = new DhcpManager($this->getEntityManager(), $this->getProcessRunner(), $this->getFilesystem());
+        $dhcp->removeProjectDhcpSettings($this->getContainer(), true);
+    }
 
 }
