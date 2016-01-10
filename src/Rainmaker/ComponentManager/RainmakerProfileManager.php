@@ -67,6 +67,7 @@ class RainmakerProfileManager extends ComponentManager
                 $this->container->getProfileVersion(),
                 $this->container->isSetDownloadHost() ? $this->container->getDownloadHostFullyQualified() : null
             );
+            $process->setTimeout(null);
             $this->getProcessRunner()->run($process);
         } catch (ProcessFailedException $e) {
             echo $e->getMessage();
