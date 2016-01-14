@@ -22,7 +22,7 @@ parameters:
     rainmaker_download_host: ~
 
     # Rainmaker Default Project Profile Name
-    rainmaker_default_project_profile: rainmaker/default-project-dev
+    rainmaker_default_project_profile: rainmaker/default-project
 
     # Rainmaker Default Project Branch Profile Name
-    rainmaker_default_project_branch_profile: rainmaker/default-branch-dev
+    rainmaker_default_project_branch_profile: rainmaker/default-branch
