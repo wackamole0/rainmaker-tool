@@ -9,7 +9,7 @@ use Rainmaker\Entity\Container;
 /**
  * Clones a Rainmaker project branch Linux Container.
  *
- * @package Rainmaker\Task\Project
+ * @package Rainmaker\Task\ProjectBranch
  */
 class CreateClone extends TaskWithSubtasks
 {

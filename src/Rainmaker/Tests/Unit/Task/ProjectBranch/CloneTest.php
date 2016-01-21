@@ -11,15 +11,15 @@ use Rainmaker\Tests\Unit\Mock\ProcessRunnerMock;
 use Rainmaker\Logger\TaskLogger;
 
 /**
- * Unit tests \Rainmaker\Task\Project\Clone
+ * Unit tests \Rainmaker\Task\ProjectBranch\CreateClone
  *
  * @package Rainmaker\Tests\Unit\Task\ProjectBranch
  */
-class CreateTest extends AbstractUnitTest
+class CloneTest extends AbstractUnitTest
 {
 
     /**
-     * Tests the successful creation of a new Rainmaker project Linux container.
+     * Tests the successful creation of a new Rainmaker project branch by cloning an existing Rainmaker project branch.
      */
     public function testCloneProjectBranch()
     {
